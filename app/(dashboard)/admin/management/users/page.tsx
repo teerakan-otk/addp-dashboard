@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 
-import { UsersDataTable } from "@/features/users/components/users-data-table";
+import { UsersDataTable } from "./_components/users-data-table";
 
 export const metadata: Metadata = {
   title: "User Management",

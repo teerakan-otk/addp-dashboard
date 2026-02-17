@@ -1,5 +1,5 @@
-import { EditProjectForm } from "@/features/projects/components/edit-project-form";
 import type { Metadata } from "next";
+import { EditProjectForm } from "./_components/edit-project-form";
 
 export const metadata: Metadata = {
   title: "Edit Project",

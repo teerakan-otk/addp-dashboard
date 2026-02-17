@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-
-import { HistoryDataTable } from "@/features/history/components/history-data-table";
+import { HistoryDataTable } from "./_components/history-data-table";
 
 export const metadata: Metadata = {
   title: "History",

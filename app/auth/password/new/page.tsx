@@ -1,5 +1,5 @@
-import { SetNewPasswordForm } from "@/features/auth/components/set-new-password-form";
+import { NewPasswordForm } from "./_components/new-password-form";
 
 export default function Page() {
-  return <SetNewPasswordForm />;
+  return <NewPasswordForm />;
 }

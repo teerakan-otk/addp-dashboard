@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { ProjectsDataTable } from "@/features/projects/components/projects-data-table";
+import { ProjectsDataTable } from "./_components/projects-data-table";
 
 export const metadata: Metadata = {
   title: "Project Management",
