@@ -1,0 +1,33 @@
+# Ignore version control directories
+.git
+.gitignore
+.svn
+.hg
+
+# Ignore build artifacts and temporary files
+bin/
+build/
+dist/
+temp/
+*.log
+*.cache
+*.tmp
+
+# Language-specific ignores (examples)
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Environment files
+.env
+.env.*
+
+# IDE-specific directories
+.vscode/
+.idea/

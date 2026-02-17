@@ -54,8 +54,8 @@ export const ProjectsColumns: ColumnDef<ColumnProps>[] = [
 
       return (
         <ColumnActions
-          viewURL={`/adminn/management/projects/${id}`}
-          editURL={`/adminn/management/projects/${id}/edit`}
+          viewURL={`/admin/management/projects/${id}`}
+          editURL={`/admin/management/projects/${id}/edit`}
           deleteURL={`/api/containers/${id}`}
         />
       );

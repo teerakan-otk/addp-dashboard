@@ -60,7 +60,7 @@ export function UploadProjectForm() {
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (key === "projectFile") {
-          formData.append("file", value);
+          formData.append("file", value as Blob);
         } else {
           formData.append(key, String(value));
         }

@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Shield, User2, IdCard } from "lucide-react";
-import { ChangePasswordSchema, changePasswordSchema } from "./_schemas";
+import { ChangePasswordSchema, changePasswordSchema } from "../_schemas";
 import { toast } from "sonner";
 
 export function ProfileCard({ data }: { data: any }) {
