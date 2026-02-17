@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
   try {
     const res = await fetch(
-      `${process.env.FLASK_API_URL}/api/auth/password/request`,
+      `${process.env.FLASK_API_URL}/api/v1/auth//password/request`,
       {
         method: "POST",
         headers: {

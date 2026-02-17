@@ -29,7 +29,7 @@ export async function GET(
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/users/${id}`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -83,7 +83,7 @@ export async function PUT(
   const body = await req.json();
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/users/${id}`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -139,7 +139,7 @@ export async function DELETE(
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/users/${id}`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

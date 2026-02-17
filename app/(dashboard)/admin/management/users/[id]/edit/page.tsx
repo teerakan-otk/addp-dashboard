@@ -1,4 +1,4 @@
-import { EditUserForm } from "@/features/users/components/edit-user-form";
+import { EditUserForm } from "./_components/edit-user-form";
 
 export default async function Page({
   params,

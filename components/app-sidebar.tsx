@@ -17,7 +17,7 @@ import {
 import { AppSidebarItem } from "./app-sidebar-item";
 import { AppSidebarGroup } from "./app-sidebar-group";
 import { Rocket } from "lucide-react";
-import { sidebarMenu } from "@/constants/sidebar";
+import { sidebarMenu } from "@/lib/constants/sidebar";
 
 export function AppSidebar({ role }: { role: string }) {
   const pathname = usePathname();
