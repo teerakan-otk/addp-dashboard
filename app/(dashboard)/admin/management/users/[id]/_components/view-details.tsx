@@ -1,19 +1,14 @@
 "use client";
 
-import useSWR from "swr";
-import { fetcher } from "@/lib/swr";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Circle, Pencil, Shield, User2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { Avatar } from "@/components/avatar";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { ContainerCard } from "./container-card";
 import { Button } from "@/components/ui/button";
 import { DatabaseCard } from "./database-card";
 import { RecentActivityCard } from "./recent-activity-card";
+import { ArrowLeft, Circle, Pencil, Shield, User2 } from "lucide-react";
 
 type ViewDetailsProps = {
   data: any;
@@ -38,7 +33,7 @@ export function ViewDetails({ data }: ViewDetailsProps) {
 
       {/* Header */}
       <div className="flex flex-row items-center gap-4">
-        <Avatar username={data.username || ""} />
+        <ProfileAvatar username={data.username || ""} />
         <div className="flex flex-1">
           {/* Title */}
           <div className="space-y-1">

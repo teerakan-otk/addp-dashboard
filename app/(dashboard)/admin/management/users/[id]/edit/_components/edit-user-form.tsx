@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
-import { fetcher } from "@/lib/swr";
+import { fetcher } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
-import { editUserSchema, EditUserSchema } from "../_schemas";
+import { editUserSchema, EditUserSchema } from "@/lib/schemas/users";
 import {
   Field,
   FieldContent,

@@ -37,8 +37,11 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-import { UploadProjectSchema, uploadProjectSchema } from "../_schemas";
-import { projectType } from "../_constants";
+import {
+  UploadProjectSchema,
+  uploadProjectSchema,
+} from "@/lib/schemas/projects";
+import { projectType } from "@/lib/constants/projects";
 
 export function UploadProjectForm() {
   const router = useRouter();

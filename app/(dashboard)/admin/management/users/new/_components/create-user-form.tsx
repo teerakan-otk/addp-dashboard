@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
-import { AddUserSchema, addUserSchema } from "../_schemas";
+import { AddUserSchema, addUserSchema } from "@/lib/schemas/users";
 import {
   Field,
   FieldContent,

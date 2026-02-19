@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { fetcher } from "@/lib/swr";
+import { fetcher } from "@/lib/utils";
 import {
   Card,
   CardContent,

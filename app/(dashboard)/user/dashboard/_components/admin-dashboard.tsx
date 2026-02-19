@@ -3,7 +3,7 @@
 import useSWR from "swr";
 import Link from "next/link";
 
-import { fetcher } from "@/lib/swr";
+import { fetcher } from "@/lib/utils";
 import { RecentProjectsDataTable } from "./recent-projects-data-table";
 import { Card, CardContent } from "@/components/ui/card";
 

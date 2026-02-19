@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getDefaultMessage } from "@/lib/response";
+import { getDefaultMessage } from "@/lib/utils";
 
 /*
  * ----------------------------------------
