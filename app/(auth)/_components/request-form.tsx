@@ -24,7 +24,7 @@ import {
   FieldError,
   FieldDescription,
 } from "@/components/ui/field";
-import { resetPasswordSchema, ResetPasswordSchema } from "../_schemas";
+import { resetPasswordSchema, ResetPasswordSchema } from "@/lib/schemas/auth";
 import { toast } from "sonner";
 
 export function RequestForm() {

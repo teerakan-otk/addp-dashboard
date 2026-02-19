@@ -29,7 +29,7 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { RectangleEllipsis } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
-import { verifyOTPSchema, VerifyOTPSchema } from "../_schemas";
+import { verifyOTPSchema, VerifyOTPSchema } from "@/lib/schemas/auth";
 import { toast } from "sonner";
 
 export function VerifyOTPForm() {

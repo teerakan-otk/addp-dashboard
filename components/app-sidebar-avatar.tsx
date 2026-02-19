@@ -15,7 +15,7 @@ import {
 import { Button } from "./ui/button";
 import { User2Icon } from "lucide-react";
 
-export function AvatarDropdown() {
+export function AppSidebarAvatar() {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -30,7 +30,7 @@ export function AvatarDropdown() {
   }, [router, profilePath]);
 
   async function handleLogout() {
-    const response = await fetch("/api/logout", {
+    const response = await fetch("/api/auth/logout", {
       method: "POST",
     });
 

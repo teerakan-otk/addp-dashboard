@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ProfileAvatar } from "./profile-avatar";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import {
   Dialog,
   DialogClose,
@@ -27,7 +27,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Shield, User2, IdCard } from "lucide-react";
-import { ChangePasswordSchema, changePasswordSchema } from "../_schemas";
+import {
+  ChangePasswordSchema,
+  changePasswordSchema,
+} from "@/lib/schemas/profile";
 import { toast } from "sonner";
 
 export function ProfileCard({ data }: { data: any }) {

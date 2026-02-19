@@ -3,16 +3,16 @@
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-type AvatarProps = {
+type Props = {
   username: string;
   className?: string;
 };
 
-export function Avatar({ username, className }: AvatarProps) {
+export function ProfileAvatar({ username, className }: Props) {
   return (
     <div
       className={cn(
-        "flex items-center justify-center border rounded-md bg-accent h-21 w-21",
+        "flex h-24 w-24 items-center justify-center bg-muted",
         className,
       )}
     >

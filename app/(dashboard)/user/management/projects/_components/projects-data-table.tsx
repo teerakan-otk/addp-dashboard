@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import useSWR from "swr";
-import { fetcher } from "@/lib/swr";
+import { fetcher } from "@/lib/utils";
 
 import {
   ColumnFiltersState,

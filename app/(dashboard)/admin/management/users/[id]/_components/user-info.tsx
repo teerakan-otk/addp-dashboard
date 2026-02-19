@@ -1,12 +1,12 @@
 "use client";
 
 import { Mail, Shield, User2 } from "lucide-react";
-import { Avatar } from "@/components/avatar";
+import { ProfileAvatar } from "@/components/profile-avatar";
 
 export function UserInfo({ data }: { data: any }) {
   return (
     <div className="flex gap-6">
-      <Avatar username={data?.username} />
+      <ProfileAvatar username={data?.username} />
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <User2 className="h-5 w-5" />: <span>{data?.username}</span>

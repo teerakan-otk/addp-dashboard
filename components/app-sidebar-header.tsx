@@ -2,7 +2,7 @@
 
 import { AppSidebarTrigger } from "./app-sidebar-trigger";
 import { ModeToggle } from "./mode-toggle";
-import { AvatarDropdown } from "./avatar-dropdown";
+import { AppSidebarAvatar } from "./app-sidebar-avatar";
 import { Separator } from "./ui/separator";
 import { AppSidebarBreadcrumb } from "./app-sidebar-breadcrumb";
 
@@ -22,7 +22,7 @@ export function AppSidebarHeader() {
 
       <div className="ml-auto flex items-center gap-2 px-4">
         <ModeToggle variant="ghost" />
-        <AvatarDropdown />
+        <AppSidebarAvatar />
       </div>
     </header>
   );
