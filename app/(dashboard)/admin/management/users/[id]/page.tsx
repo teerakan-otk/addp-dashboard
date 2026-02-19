@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { fetchUser } from "@/actions/users";
+import { fetchUser } from "./_actions/users";
 import { ViewDetails } from "./_components/view-details";
 
 export default async function Page({
