@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
 
-export async function fetchUser(id: string) {
+export async function getUser(id: string) {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
 
-  const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users/${id}`, {
+  const res = await fetch(`${process.env.FLASK_API_URL}/api/users/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",

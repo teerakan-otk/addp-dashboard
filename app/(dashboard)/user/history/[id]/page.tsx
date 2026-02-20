@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HistoryViewDetails } from "./_components/history-view-details";
+import { HistoryViewDetails } from "@/components/history-view-details";
 
 export const metadata: Metadata = {
   title: "View Details",

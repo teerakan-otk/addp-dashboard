@@ -6,7 +6,7 @@ import { jwtVerify } from "jose";
  * -------------------------------------------------- */
 
 // Public authentication-related routes
-const AUTH_ROUTES = ["/auth/login", "/auth/register", "/auth/password"];
+const AUTH_ROUTES = ["/login", "/register", "/password"];
 
 // Default landing pages per role
 const ROLE_DASHBOARD = {
@@ -63,12 +63,12 @@ export async function proxy(req: NextRequest) {
    * -------------------------------------------------- */
 
   if (!accessToken) {
-    if (pathname === "/auth/password/verify" && !requestToken) {
-      return redirect("/auth/password/request", req);
+    if (pathname === "/password/verify" && !requestToken) {
+      return redirect("/password/request", req);
     }
 
-    if (pathname === "/auth/password/new" && !verifyToken) {
-      return redirect("/auth/password/verify", req);
+    if (pathname === "/password/new" && !verifyToken) {
+      return redirect("/password/verify", req);
     }
   }
 
@@ -78,7 +78,7 @@ export async function proxy(req: NextRequest) {
 
   if (!accessToken) {
     if (!isAuthRoute(pathname)) {
-      return redirect("/auth/login", req);
+      return redirect("/login", req);
     }
 
     return NextResponse.next();
@@ -105,7 +105,7 @@ export async function proxy(req: NextRequest) {
 
     role = rawRole as Role;
   } catch {
-    const res = redirect("/auth/login", req);
+    const res = redirect("/login", req);
     res.cookies.delete("access_token");
     return res;
   }
@@ -131,7 +131,7 @@ export async function proxy(req: NextRequest) {
   }
 
   if (isTokenExpired(accessToken)) {
-    const response = NextResponse.redirect(new URL("/auth/login", req.url));
+    const response = NextResponse.redirect(new URL("/login", req.url));
     response.cookies.delete("access_token");
     return response;
   }

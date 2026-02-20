@@ -19,7 +19,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/users`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ export async function GET(req: Request) {
 //   }
 
 //   try {
-//     const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users`, {
+//     const res = await fetch(`${process.env.FLASK_API_URL}/api/users`, {
 //       method: "POST",
 //       headers: {
 //         Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ export async function POST(req: Request) {
     const token = cookieStore.get("access_token")?.value; // Fixed typo: access_toke -> access_token
     const body = await req.json();
 
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/users`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

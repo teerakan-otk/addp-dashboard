@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { Profile } from "./_components/profile";
+import { Profile } from "@/components/profile";
 
 export const metadata: Metadata = {
   title: "Profile",

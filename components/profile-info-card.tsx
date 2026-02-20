@@ -33,7 +33,11 @@ import {
 } from "@/lib/schemas/profile";
 import { toast } from "sonner";
 
-export function ProfileCard({ data }: { data: any }) {
+type Props = {
+  data: any;
+};
+
+export function ProfileInfoCard({ data }: Props) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -124,9 +128,10 @@ export function ProfileCard({ data }: { data: any }) {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Change Your Password</DialogTitle>
-                  <DialogDescription>
-                    Please enter your current and new password below.
+                  <DialogTitle>Update your password</DialogTitle>
+                  <DialogDescription className="pt-1">
+                    For security reasons, please enter your current password and
+                    choose a new one.
                   </DialogDescription>
                 </DialogHeader>
 
@@ -222,16 +227,53 @@ export function ProfileCard({ data }: { data: any }) {
                     type="submit"
                     disabled={isSubmitting}
                   >
-                    Save changes
+                    {isSubmitting ? "Updating..." : "Update Password"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </form>
           </Dialog>
 
-          <Button type="button" size="sm" variant="destructive">
-            Delete Account
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button type="button" size="sm" variant="destructive">
+                Delete Account
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="text-destructive">
+                  Delete your account?
+                </DialogTitle>
+                <DialogDescription className="pt-2">
+                  This action is permanent and cannot be undone. All your data
+                  will be permanently deleted.
+                </DialogDescription>
+              </DialogHeader>
+
+              <DialogFooter className="gap-2 sm:justify-end">
+                <DialogClose asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isSubmitting}
+                  >
+                    Keep Account
+                  </Button>
+                </DialogClose>
+
+                <Button
+                  form="form-rfh-delete"
+                  type="submit"
+                  variant="destructive"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Deleting..." : "Yes, Delete Account"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </CardContent>
     </Card>

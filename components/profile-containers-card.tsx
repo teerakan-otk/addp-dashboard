@@ -11,7 +11,11 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Box } from "lucide-react";
 
-export function ContainersCard({ data }: { data: any }) {
+type Props = {
+  data: any;
+};
+
+export function ProfileContainersCard({ data }: Props) {
   const percentage =
     data.containers?.total > 0
       ? Math.round((data.containers?.used / data.containers?.total) * 100)

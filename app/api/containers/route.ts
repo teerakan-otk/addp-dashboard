@@ -128,7 +128,7 @@ export async function POST(req: Request) {
   if (file) forwardForm.append("file", file);
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/projects`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/test-upload`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,

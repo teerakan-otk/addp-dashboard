@@ -71,13 +71,13 @@ export function UploadProjectForm() {
     });
 
     try {
-      const res = await fetch("/api/projects", {
+      const res = await fetch("/api/containers", {
         method: "POST",
         body: formData,
       });
 
       const data = await res.json();
-      if (!res.ok) return console.error(data);
+      if (!res.ok) return toast.error(data.error?.message || data.message);
 
       return toast.message(<pre>{JSON.stringify(data, null, 2)}</pre>);
     } catch (e) {

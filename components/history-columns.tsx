@@ -2,9 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { ArrowUpDown, Check, Circle, Pause, RefreshCcw, X } from "lucide-react";
+import { ArrowUpDown, Circle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ColumnActions } from "@/components/column-actions";
+import { Button } from "./ui/button";
 
 export type ColumnProps = {
   id: number;
@@ -17,13 +18,14 @@ export const HistoryColumns: ColumnDef<ColumnProps>[] = [
     accessorKey: "created_at",
     header: ({ column }) => {
       return (
-        <div
+        <Button
+          variant="ghost"
           className="flex items-center gap-2"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Timestamp
           <ArrowUpDown className="h-4 w-4" />
-        </div>
+        </Button>
       );
     },
   },

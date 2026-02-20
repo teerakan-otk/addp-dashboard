@@ -53,7 +53,7 @@ export function LoginForm() {
 
       const data = await res.json();
       if (!res.ok) {
-        return toast.error(data.error?.message);
+        return toast.error(data.error?.message || data.message);
       }
 
       router.refresh();
