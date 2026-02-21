@@ -2,13 +2,11 @@ import { type NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 /* --------------------------------------------------
- * Route constants
+ * Route Configuration
  * -------------------------------------------------- */
 
-// Public authentication-related routes
 const AUTH_ROUTES = ["/login", "/register", "/password"];
 
-// Default landing pages per role
 const ROLE_DASHBOARD = {
   admin: "/admin/dashboard",
   user: "/user/dashboard",
@@ -17,7 +15,7 @@ const ROLE_DASHBOARD = {
 type Role = keyof typeof ROLE_DASHBOARD;
 
 /* --------------------------------------------------
- * JWT configuration (Edge-compatible)
+ * JWT Configuration (Edge Compatible)
  * -------------------------------------------------- */
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
@@ -26,57 +24,28 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
  * Helpers
  * -------------------------------------------------- */
 
+const redirect = (path: string, req: NextRequest) =>
+  NextResponse.redirect(new URL(path, req.url));
+
 const isAuthRoute = (pathname: string) =>
   AUTH_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
 
-const redirect = (path: string, req: NextRequest) =>
-  NextResponse.redirect(new URL(path, req.url));
-
-function isTokenExpired(token: string) {
-  try {
-    const payload = JSON.parse(
-      Buffer.from(token.split(".")[1], "base64").toString(),
-    );
-
-    const exp = payload.exp * 1000; // convert to ms
-    return Date.now() > exp;
-  } catch {
-    return true; // invalid token = treat as expired
-  }
-}
-
 /* --------------------------------------------------
- * Proxy / Middleware
+ * Middleware
  * -------------------------------------------------- */
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const accessToken = req.cookies.get("access_token")?.value;
-  const requestToken = req.cookies.get("request_token")?.value;
-  const verifyToken = req.cookies.get("verify_token")?.value;
+  const token = req.cookies.get("access_token")?.value;
 
-  /* --------------------------------------------------
-   * Reset-password flow guard (unauth only)
-   * -------------------------------------------------- */
+  /* ---------------------------------------------
+   * 1️⃣ No token → only allow auth routes
+   * --------------------------------------------- */
 
-  if (!accessToken) {
-    if (pathname === "/password/verify" && !requestToken) {
-      return redirect("/password/request", req);
-    }
-
-    if (pathname === "/password/new" && !verifyToken) {
-      return redirect("/password/verify", req);
-    }
-  }
-
-  /* --------------------------------------------------
-   * Unauthenticated access
-   * -------------------------------------------------- */
-
-  if (!accessToken) {
+  if (!token) {
     if (!isAuthRoute(pathname)) {
       return redirect("/login", req);
     }
@@ -84,43 +53,45 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  /* --------------------------------------------------
-   * JWT verification & role extraction
-   * -------------------------------------------------- */
+  /* ---------------------------------------------
+   * 2️⃣ Verify JWT (also checks expiration)
+   * --------------------------------------------- */
 
   let role: Role;
 
   try {
-    const { payload } = await jwtVerify(accessToken, JWT_SECRET);
+    const { payload } = await jwtVerify(token, JWT_SECRET);
 
     if (typeof payload.role !== "string") {
-      throw new Error("Role missing in token");
+      throw new Error("Missing role");
     }
 
-    const rawRole = payload.role.toLowerCase();
+    const normalizedRole = payload.role.toLowerCase();
 
-    if (!(rawRole in ROLE_DASHBOARD)) {
+    if (!(normalizedRole in ROLE_DASHBOARD)) {
       throw new Error("Invalid role");
     }
 
-    role = rawRole as Role;
+    role = normalizedRole as Role;
   } catch {
     const res = redirect("/login", req);
     res.cookies.delete("access_token");
     return res;
   }
 
-  /* --------------------------------------------------
-   * Prevent authenticated users from auth pages
-   * -------------------------------------------------- */
+  /* ---------------------------------------------
+   * 3️⃣ Prevent auth users from visiting:
+   *    - auth pages
+   *    - forbidden page
+   * --------------------------------------------- */
 
-  if (isAuthRoute(pathname)) {
+  if (isAuthRoute(pathname) || pathname === "/forbidden") {
     return redirect(ROLE_DASHBOARD[role], req);
   }
 
-  /* --------------------------------------------------
-   * Role-based access control
-   * -------------------------------------------------- */
+  /* ---------------------------------------------
+   * 4️⃣ Role-Based Access Control
+   * --------------------------------------------- */
 
   if (pathname.startsWith("/admin") && role !== "admin") {
     return redirect("/forbidden", req);
@@ -130,11 +101,9 @@ export async function proxy(req: NextRequest) {
     return redirect("/forbidden", req);
   }
 
-  if (isTokenExpired(accessToken)) {
-    const response = NextResponse.redirect(new URL("/login", req.url));
-    response.cookies.delete("access_token");
-    return response;
-  }
+  /* ---------------------------------------------
+   * 5️⃣ Allow request
+   * --------------------------------------------- */
 
   return NextResponse.next();
 }

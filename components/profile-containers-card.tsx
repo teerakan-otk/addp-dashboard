@@ -12,13 +12,16 @@ import { Badge } from "@/components/ui/badge";
 import { Box } from "lucide-react";
 
 type Props = {
-  data: any;
+  containers: {
+    used: number;
+    max: number;
+  };
 };
 
-export function ProfileContainersCard({ data }: Props) {
+export function ProfileContainersCard({ containers }: Props) {
   const percentage =
-    data.containers?.total > 0
-      ? Math.round((data.containers?.used / data.containers?.total) * 100)
+    containers?.max > 0
+      ? Math.round((containers?.used / containers?.max) * 100)
       : 0;
 
   const status =
@@ -44,7 +47,7 @@ export function ProfileContainersCard({ data }: Props) {
         <div className="flex justify-between text-sm">
           <span>In use</span>
           <span>
-            {data.containers?.used} / {data.containers?.total}
+            {containers?.used} / {containers?.max}
           </span>
         </div>
 

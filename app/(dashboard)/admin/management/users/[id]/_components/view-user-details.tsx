@@ -24,12 +24,7 @@ import {
 
 type ContainerData = {
   used: number;
-  total: number;
-};
-
-type DatabaseData = {
-  connected: boolean;
-  request: boolean;
+  max: number;
 };
 
 type UserData = {
@@ -40,7 +35,7 @@ type UserData = {
   created_at: string;
   updated_at: string;
   containers?: ContainerData;
-  database?: DatabaseData;
+  database?: number;
 };
 
 type Props = {
@@ -51,16 +46,16 @@ type Props = {
 /*                                Helper Logic                                */
 /* -------------------------------------------------------------------------- */
 
-function getDatabaseStatus(data?: DatabaseData) {
+function getDatabaseStatus(data?: number) {
   if (!data) {
     return { label: "Not connected", color: "red" };
   }
 
-  if (data.connected && !data.request) {
+  if (data === 2) {
     return { label: "Connected", color: "green" };
   }
 
-  if (!data.connected && data.request) {
+  if (data === 1) {
     return { label: "Pending Request", color: "yellow" };
   }
 
@@ -71,7 +66,7 @@ function getDatabaseStatus(data?: DatabaseData) {
 /*                               Database Card                                */
 /* -------------------------------------------------------------------------- */
 
-function DatabaseCard({ data }: { data?: DatabaseData }) {
+function DatabaseCard({ data }: { data?: number }) {
   const status = getDatabaseStatus(data);
 
   return (

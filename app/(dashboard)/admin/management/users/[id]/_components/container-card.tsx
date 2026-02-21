@@ -7,7 +7,7 @@ import { Box } from "lucide-react";
 
 type ContainerData = {
   used: number;
-  total: number;
+  max: number;
 };
 
 function getContainerStatus(percentage: number) {
@@ -24,9 +24,9 @@ function getContainerStatus(percentage: number) {
 
 export function ContainerCard({ data }: { data?: ContainerData }) {
   const used = data?.used ?? 0;
-  const total = data?.total ?? 0;
+  const max = data?.max ?? 0;
 
-  const percentage = total > 0 ? Math.round((used / total) * 100) : 0;
+  const percentage = max > 0 ? Math.round((used / max) * 100) : 0;
 
   const status = getContainerStatus(percentage);
 
@@ -46,7 +46,7 @@ export function ContainerCard({ data }: { data?: ContainerData }) {
           <div className="flex justify-between text-sm">
             <span>In use</span>
             <span>
-              {used} / {total}
+              {used} / {max}
             </span>
           </div>
 

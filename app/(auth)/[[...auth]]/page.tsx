@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { NewPasswordForm } from "../_components/new-password-form";
-import { RequestForm } from "../_components/request-form";
-import { VerifyOTPForm } from "../_components/verify-otp-form";
-import { LoginForm } from "../_components/login-form";
-import { RegisterForm } from "../_components/register-form";
+import { NewPasswordForm } from "./_components/new-password-form";
+import { RequestForm } from "./_components/request-form";
+import { VerifyOTPForm } from "./_components/verify-otp-form";
+import { LoginForm } from "./_components/login-form";
+import { RegisterForm } from "./_components/register-form";
 
 type Props = {
   params: Promise<{ auth?: string[] }>;

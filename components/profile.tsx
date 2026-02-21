@@ -22,8 +22,8 @@ export function Profile() {
         <ProfileInfoCard data={data} />
       </div>
       <div className="grid md:grid-cols-2 gap-6">
-        <ProfileContainersCard data={data} />
-        <ProfileDBCard data={data} />
+        <ProfileContainersCard containers={data.containers} />
+        <ProfileDBCard database={data.database} />
         <DocsCard label="Read documentation" />
       </div>
     </div>

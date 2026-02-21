@@ -38,12 +38,12 @@ export const HistoryColumns: ColumnDef<ColumnProps>[] = [
     header: "Container name",
   },
   {
-    accessorKey: "action",
-    header: "Type",
+    accessorKey: "event",
+    header: "Event",
     cell: ({ row }) => {
-      const type = row.original.action;
+      const event = row.original.action;
 
-      return <Badge variant="outline">{type}</Badge>;
+      return <Badge variant="outline">{event}</Badge>;
     },
   },
   {

@@ -1,62 +1,62 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-
 import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Key } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import { ScanFace } from "lucide-react";
 import { toast } from "sonner";
-import { setPasswordSchema, SetPasswordSchema } from "@/lib/schemas/auth";
+import { loginSchema, LoginSchema } from "@/lib/schemas/auth";
 
-export function NewPasswordForm() {
+export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const router = useRouter();
 
-  const form = useForm<SetPasswordSchema>({
-    resolver: zodResolver(setPasswordSchema),
-    mode: "onChange",
+  const form = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
+      username: "",
       password: "",
-      cPassword: "",
     },
   });
 
-  async function handleSubmit(values: SetPasswordSchema) {
+  async function onSubmit(values: LoginSchema) {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/password/new", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          username: values.username,
+          password: values.password,
+        }),
       });
 
-      const result = await response.json();
-      if (!response.ok) {
-        return toast.error(result.error?.message);
+      const data = await res.json();
+      if (!res.ok) {
+        return toast.error(data.error?.message || data.message);
       }
 
-      toast.success("Set password successful");
-
-      router.push("/login");
+      router.refresh();
     } catch {
       return toast.error("Internal server error");
     } finally {
@@ -65,39 +65,31 @@ export function NewPasswordForm() {
   }
 
   return (
-    <Card>
+    <Card className="w-full max-w-md">
       <CardHeader className="text-center">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-          <Key className="h-6 w-6 text-primary" />
+          <ScanFace className="h-6 w-6 text-primary" />
         </div>
-        <CardTitle className="text-2xl">Set new password</CardTitle>
-        <CardDescription>
-          Create a strong password with a mix of letters, numbers and symbols
-        </CardDescription>
+        <CardTitle className="text-2xl">Sign in to your account</CardTitle>
       </CardHeader>
+
       <CardContent>
-        <form id="new-password" onSubmit={form.handleSubmit(handleSubmit)}>
+        <form id="login-form" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
             <Controller
-              name="password"
+              name="username"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel
-                    htmlFor={field.name}
-                    aria-invalid={fieldState.invalid}
-                  >
-                    Password
+                  <FieldLabel aria-invalid={fieldState.invalid}>
+                    Username
                   </FieldLabel>
                   <Input
                     {...field}
-                    type="password"
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
                     disabled={isSubmitting}
+                    aria-invalid={fieldState.invalid}
                   />
-
-                  {fieldState.error && (
+                  {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
                 </Field>
@@ -105,25 +97,26 @@ export function NewPasswordForm() {
             />
 
             <Controller
-              name="cPassword"
+              name="password"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel
-                    htmlFor={field.name}
-                    aria-invalid={fieldState.invalid}
-                  >
-                    Confrim password
-                  </FieldLabel>
+                  <div className="flex items-center">
+                    <FieldLabel>Password</FieldLabel>
+                    <Link
+                      href="/password/request"
+                      className="ml-auto text-sm text-primary hover:underline"
+                    >
+                      Forgot your password?
+                    </Link>
+                  </div>
                   <Input
                     {...field}
                     type="password"
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
                     disabled={isSubmitting}
+                    aria-invalid={fieldState.invalid}
                   />
-
-                  {fieldState.error && (
+                  {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
                 </Field>
@@ -132,16 +125,24 @@ export function NewPasswordForm() {
           </FieldGroup>
         </form>
       </CardContent>
+
       <CardFooter>
-        <Field>
+        <Field className="w-full">
           <Button
             type="submit"
-            form="new-password"
-            className="cursor-pointer"
+            form="login-form"
+            className="w-full cursor-pointer"
             disabled={isSubmitting}
           >
-            {isSubmitting ? <Spinner /> : "Submit"}
+            {isSubmitting ? <Spinner /> : "Log in"}
           </Button>
+
+          <FieldDescription className="text-center">
+            Don’t have an account?{" "}
+            <Link href="/register" className="text-primary hover:underline">
+              Create one
+            </Link>
+          </FieldDescription>
         </Field>
       </CardFooter>
     </Card>

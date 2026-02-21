@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 type Props = {
-  data: any;
+  database: number;
 };
 
-export function ProfileDBCard({ data }: Props) {
+export function ProfileDBCard({ database }: Props) {
   return (
     <Card>
       <CardHeader>
@@ -27,12 +27,18 @@ export function ProfileDBCard({ data }: Props) {
           <p
             className={cn(
               "text-4xl font-semibold",
-              data.database?.connected === true
+              database === 2
                 ? "text-emerald-500"
-                : "text-destructive",
+                : database === 1
+                  ? "text-yellow-500"
+                  : "text-destructive",
             )}
           >
-            {data.database?.connected === true ? "Connected" : "Not connected"}
+            {database === 2
+              ? "Connected"
+              : database === 1
+                ? "Request"
+                : "Not connected"}
           </p>
         </div>
       </CardContent>

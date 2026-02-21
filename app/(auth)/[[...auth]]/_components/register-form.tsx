@@ -68,7 +68,7 @@ export function RegisterForm() {
       toast.success("Register successful");
 
       setTimeout(() => {
-        router.push("/auth/login");
+        router.refresh();
       }, 1500);
     } catch {
       return toast.error("Internal server error");
@@ -78,7 +78,7 @@ export function RegisterForm() {
   }
 
   return (
-    <Card>
+    <Card className="w-full max-w-xl">
       <CardHeader className="text-center">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
           <UserPlus className="h-6 w-6 text-primary" />
@@ -207,13 +207,14 @@ export function RegisterForm() {
                     className="cursor-pointer"
                   />
                   <div className="flex items-center gap-2">
-                    <FieldLabel>Create Database</FieldLabel>
+                    <FieldLabel>Use MySQL Database</FieldLabel>
                     <DynamicTooltip
-                      className="w-64 text-center"
-                      title="Create Database"
+                      className="max-w-xs text-sm leading-relaxed text-left"
+                      title="Use MySQL Database"
                     >
-                      สร้างบัญชีเพื่อใช้จัดการฐานข้อมูล โดยใช้ phpMyAdmin
-                      (หากมีการใช้งานฐานข้อมูล)
+                      Enable this option if you require a MySQL database with
+                      phpMyAdmin access for database management and
+                      administration.
                     </DynamicTooltip>
                   </div>
                 </Field>

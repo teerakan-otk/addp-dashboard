@@ -10,8 +10,8 @@ export type Dashboard = {
 
 export const RecentProjectsColumns: ColumnDef<Dashboard>[] = [
   {
-    accessorKey: "owner",
-    header: "Owner",
+    accessorKey: "name",
+    header: "Container Name",
   },
   {
     accessorKey: "domain",

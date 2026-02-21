@@ -7,11 +7,19 @@ import { fetcher } from "@/lib/utils";
 import { RecentProjectsDataTable } from "./recent-projects-data-table";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { Users, Database, Activity, ExternalLink } from "lucide-react";
+import {
+  Users,
+  Database,
+  Activity,
+  ExternalLink,
+  Container,
+  Projector,
+  Boxes,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 type StatCardProps = {
-  value?: number | string;
+  value?: any;
   label: string;
   Icon: LucideIcon;
   href?: string;
@@ -70,23 +78,26 @@ export function AdminDashboard() {
 
   if (isLoading) return null;
 
-  const statistics = data?.users ?? [];
   const projects = data?.containers ?? [];
 
   return (
     <div className="space-y-6">
       <div className="grid md:grid-cols-3 gap-6">
         <StatCard
-          value={statistics?.total_users}
-          label="Total Users"
-          Icon={Users}
+          value={data.containers?.used_containers ?? undefined}
+          label="Running Projects"
+          Icon={Container}
         />
         <StatCard
-          value={statistics?.total_req_db}
-          label="Request DB Access"
+          value={data.containers?.max_containers ?? undefined}
+          label="Remaining Projects"
+          Icon={Boxes}
+        />
+        <StatCard
+          value={data.database ?? undefined}
+          label="Database status"
           Icon={Database}
         />
-        <SystemMonitorCard />
       </div>
 
       <RecentProjectsDataTable data={projects} />
