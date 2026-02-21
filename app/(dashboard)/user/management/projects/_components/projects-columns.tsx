@@ -13,10 +13,6 @@ export type ColumnProps = {
 
 export const ProjectsColumns: ColumnDef<ColumnProps>[] = [
   {
-    accessorKey: "owner",
-    header: "Owner",
-  },
-  {
     accessorKey: "container_name",
     header: "Container name",
   },
@@ -54,8 +50,8 @@ export const ProjectsColumns: ColumnDef<ColumnProps>[] = [
 
       return (
         <ColumnActions
-          viewURL={`/admin/management/projects/${id}`}
-          editURL={`/admin/management/projects/${id}/edit`}
+          viewURL={`/user/management/projects/${id}`}
+          editURL={`/user/management/projects/${id}/edit`}
           deleteURL={`/api/containers/${id}`}
         />
       );

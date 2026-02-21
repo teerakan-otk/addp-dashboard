@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const uploadProjectSchema = z.object({
-  containerName: z
+  name: z
     .string()
     .trim()
     .toLowerCase()
@@ -13,7 +13,7 @@ export const uploadProjectSchema = z.object({
     .number()
     .min(1, "Port range must between 1 to 65535")
     .max(65535, "Port range must between 1 to 65535"),
-  domainName: z
+  domain: z
     .string()
     .trim()
     .toLowerCase()
@@ -21,8 +21,8 @@ export const uploadProjectSchema = z.object({
       /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/,
       "Invalid subdomain format",
     ),
-  projectType: z.string().min(1, "Project type is required"),
-  projectFile: z
+  type: z.string().min(1, "Project type is required"),
+  file: z
     .custom<File>((val) => val instanceof File, "Please upload .zip file")
     .refine(
       (file) => file.size <= 10 * 1024 * 1024,

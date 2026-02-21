@@ -15,6 +15,8 @@ import {
   Container,
   Projector,
   Boxes,
+  Gauge,
+  Briefcase,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -29,44 +31,21 @@ function StatCard({ value, label, Icon, href }: StatCardProps) {
   return (
     <Card>
       <CardContent className="flex items-center gap-6">
+        {/* Icon */}
         <div className="bg-muted p-4 rounded-full">
           <Icon />
         </div>
+
+        {/* Content */}
         <div>
           {href ? (
-            <Link href={href} className="text-3xl font-semibold">
+            <Link href={href} className="text-2xl font-semibold">
               {value}
             </Link>
           ) : (
-            <p className="text-3xl font-semibold">{value ?? "-"}</p>
+            <p className="text-2xl font-semibold">{value ?? "-"}</p>
           )}
           <p className="text-sm text-muted-foreground">{label}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function SystemMonitorCard() {
-  return (
-    <Card>
-      <CardContent>
-        <div className="flex items-center gap-4">
-          <div className="bg-muted p-4 rounded-full group-hover:bg-background transition-colors">
-            <Activity />
-          </div>
-          <div>
-            <Link
-              href="#1"
-              className="flex items-center gap-2 underline underline-offset-4"
-            >
-              <span className="text-lg font-semibold">System Monitor</span>
-              <ExternalLink className="h-5 w-5" />
-            </Link>
-            <p className="text-sm text-muted-foreground">
-              View system health & logs
-            </p>
-          </div>
         </div>
       </CardContent>
     </Card>
@@ -84,18 +63,24 @@ export function AdminDashboard() {
     <div className="space-y-6">
       <div className="grid md:grid-cols-3 gap-6">
         <StatCard
-          value={data.containers?.used_containers ?? undefined}
-          label="Running Projects"
-          Icon={Container}
+          value={data.user?.containers?.used ?? 0}
+          label="Active Projects"
+          Icon={Briefcase}
         />
         <StatCard
-          value={data.containers?.max_containers ?? undefined}
-          label="Remaining Projects"
-          Icon={Boxes}
+          value={data.user?.containers?.max ?? 0}
+          label="Remaining Quota"
+          Icon={Gauge}
         />
         <StatCard
-          value={data.database ?? undefined}
-          label="Database status"
+          value={
+            data.user?.database === 2
+              ? "Connected"
+              : data.user?.database === 1
+                ? "Pending"
+                : "Disconnected"
+          }
+          label="Database Status"
           Icon={Database}
         />
       </div>

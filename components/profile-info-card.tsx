@@ -63,7 +63,11 @@ export function ProfileInfoCard({ data }: Props) {
 
       const data = await res.json();
       if (!res.ok) {
-        return toast.error(data.error?.message);
+        return toast.error(
+          data.error?.message ||
+            data.message ||
+            "Something went wrong. Try again later",
+        );
       }
 
       toast.success("Update password success");

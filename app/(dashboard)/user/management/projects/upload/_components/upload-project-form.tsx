@@ -49,11 +49,11 @@ export function UploadProjectForm() {
   const form = useForm<UploadProjectSchema>({
     resolver: zodResolver(uploadProjectSchema),
     defaultValues: {
-      containerName: "",
-      projectType: "",
-      domainName: "",
-      port: 80,
-      projectFile: undefined,
+      name: "",
+      type: "",
+      domain: "",
+      port: undefined,
+      file: undefined,
     },
   });
 
@@ -62,7 +62,7 @@ export function UploadProjectForm() {
 
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        if (key === "projectFile") {
+        if (key === "file") {
           formData.append("file", value as Blob);
         } else {
           formData.append(key, String(value));
@@ -107,7 +107,7 @@ export function UploadProjectForm() {
             </FieldDescription>
             <FieldGroup className="grid md:grid-cols-2 gap-6">
               <Controller
-                name="containerName"
+                name="name"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
@@ -133,7 +133,7 @@ export function UploadProjectForm() {
               />
 
               <Controller
-                name="projectType"
+                name="type"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
@@ -185,15 +185,18 @@ export function UploadProjectForm() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>
+                    <FieldLabel
+                      htmlFor={field.name}
+                      aria-invalid={fieldState.invalid}
+                    >
                       Port Mapping <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Input
-                      type="number"
-                      placeholder="80"
+                      {...field}
                       id={field.name}
                       aria-invalid={fieldState.invalid}
                       onChange={(e) => field.onChange(Number(e.target.value))}
+                      placeholder="80"
                     />
                     <FieldDescription>
                       Internal container port to expose.
@@ -206,7 +209,7 @@ export function UploadProjectForm() {
               />
 
               <Controller
-                name="domainName"
+                name="domain"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
@@ -240,19 +243,16 @@ export function UploadProjectForm() {
 
           {/* ================= File Upload ================= */}
           <FieldSet>
-            <FieldLegend>Project Files</FieldLegend>
+            <FieldLegend>
+              Project Files <span className="text-destructive">*</span>
+            </FieldLegend>
             <FieldDescription>Upload your deployment package.</FieldDescription>
             <FieldGroup>
               <Controller
-                name="projectFile"
+                name="file"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Upload .zip File
-                      <span className="text-destructive">*</span>
-                    </FieldLabel>
-
                     <div className="relative">
                       <Input
                         id={field.name}

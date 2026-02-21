@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { apiGet, apiPost } from "@/lib/api-fetch";
 
 /*
  * ----------------------------------------
  * GET PROFILE STATUS
  * ----------------------------------------
  */
+
 export async function GET(req: Request) {
   const cookieStore = await cookies();
 
@@ -28,16 +30,15 @@ export async function GET(req: Request) {
 
     const data = await res.json();
     if (!res.ok)
-      return NextResponse.json(
-        data || "Something went wrong. Try again later",
-        { status: res.status },
-      );
+      return NextResponse.json(data || { message: "Internal server error" }, {
+        status: res.status,
+      });
 
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json(data, { status: res.status });
   } catch {
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
+      { message: "Service unvailable" },
+      { status: 503 },
     );
   }
 }
@@ -47,6 +48,7 @@ export async function GET(req: Request) {
  * CHANGE PASSWORD
  * ----------------------------------------
  */
+
 export async function PUT(req: Request) {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
@@ -61,24 +63,30 @@ export async function PUT(req: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        oldPassword: body.oldPassword,
-        newPassword: body.cNewPassword,
+        old_password: body.oldPassword,
+        new_password: body.cNewPassword,
       }),
     });
 
-    if (!res.ok)
-      return NextResponse.json(
-        { error: { message: "Something went wrong. Try again later" } },
-        { status: res.status },
-      );
+    let data: any;
+
+    if (!res.ok) {
+      try {
+        data = await res.json();
+      } catch {}
+
+      return NextResponse.json(data || { message: "Internal server error" }, {
+        status: res.status,
+      });
+    }
 
     cookieStore.delete("access_token");
 
-    return NextResponse.json({ status: 200 });
+    return NextResponse.json({ status: res.status });
   } catch {
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
+      { message: "Service unvailable" },
+      { status: 503 },
     );
   }
 }
