@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { apiGet, apiPost } from "@/lib/api-fetch";
 
 /*
  * ----------------------------------------
