@@ -49,11 +49,11 @@ export function UploadProjectForm() {
   const form = useForm<UploadProjectSchema>({
     resolver: zodResolver(uploadProjectSchema),
     defaultValues: {
-      containerName: "",
-      projectType: "",
-      domainName: "",
+      name: "",
+      type: "",
+      domain: "",
       port: 80,
-      projectFile: undefined,
+      file: undefined,
     },
   });
 
@@ -107,7 +107,7 @@ export function UploadProjectForm() {
             </FieldDescription>
             <FieldGroup className="grid md:grid-cols-2 gap-6">
               <Controller
-                name="containerName"
+                name="name"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
@@ -133,7 +133,7 @@ export function UploadProjectForm() {
               />
 
               <Controller
-                name="projectType"
+                name="type"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
@@ -206,7 +206,7 @@ export function UploadProjectForm() {
               />
 
               <Controller
-                name="domainName"
+                name="domain"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
@@ -244,7 +244,7 @@ export function UploadProjectForm() {
             <FieldDescription>Upload your deployment package.</FieldDescription>
             <FieldGroup>
               <Controller
-                name="projectFile"
+                name="file"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
