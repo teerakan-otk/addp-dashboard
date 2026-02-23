@@ -43,7 +43,7 @@ export function UsersDataTable() {
     },
   });
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return null;
 
   // ------------------------------------
   // Render

@@ -1,26 +1,31 @@
 "use client";
 
+import { useState } from "react";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, X } from "lucide-react";
+import { Button } from "./ui/button";
+
+type Props = {
+  globalFilter: any;
+  setGlobalFilter: any;
+  children?: any;
+};
 
 export function DataTableHeader({
   globalFilter,
   setGlobalFilter,
   children,
-}: {
-  globalFilter: any;
-  setGlobalFilter: any;
-  children?: any;
-}) {
+}: Props) {
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+
   return (
     <div className="flex items-center justify-between py-4">
       <InputGroup className="max-w-60 md:max-w-sm">
         <InputGroupInput
-          id="inline-start-input"
           placeholder="Search..."
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(event.target.value)}
@@ -29,6 +34,7 @@ export function DataTableHeader({
           <SearchIcon className="text-muted-foreground" />
         </InputGroupAddon>
       </InputGroup>
+
       {children}
     </div>
   );

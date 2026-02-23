@@ -58,7 +58,7 @@ export function DynamicTooltip({
       <TooltipTrigger asChild>
         <span aria-label={title}>{TriggerIcon}</span>
       </TooltipTrigger>
-      <TooltipContent className={className} side="top">
+      <TooltipContent className={className} side="bottom">
         {children}
       </TooltipContent>
     </Tooltip>

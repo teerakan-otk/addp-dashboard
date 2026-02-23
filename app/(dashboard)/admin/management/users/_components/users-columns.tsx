@@ -13,12 +13,10 @@ type ColumnProps = {
   role: string;
   container: {
     used: number;
-    total: number;
+    max: number;
   };
-  database: {
-    connected: boolean;
-    request: boolean;
-  };
+  database: number;
+  status: number;
 };
 
 export const UsersColumns: ColumnDef<ColumnProps>[] = [
@@ -47,11 +45,11 @@ export const UsersColumns: ColumnDef<ColumnProps>[] = [
     header: "Containers",
     cell: ({ row }) => {
       const used = Number(row.original.container.used);
-      const total = Number(row.original.container.total);
+      const max = Number(row.original.container.max);
 
       return (
         <div>
-          {used} / {total}
+          {used} / {max}
         </div>
       );
     },
@@ -60,14 +58,13 @@ export const UsersColumns: ColumnDef<ColumnProps>[] = [
     accessorKey: "database",
     header: "Database",
     cell: ({ row }) => {
-      const connected = row.original.database.connected;
-      const request = row.original.database.request;
+      const database = row.original.database;
       const status =
-        connected === true && request === false
+        database === 2
           ? "connected"
-          : connected === false && request === true
+          : database === 1
             ? "request"
-            : "not connected";
+            : "disconnected";
 
       const color =
         status === "connected"
@@ -75,6 +72,21 @@ export const UsersColumns: ColumnDef<ColumnProps>[] = [
           : status === "request"
             ? "yellow"
             : "red";
+
+      return (
+        <Badge variant="outline" className="flex items-center gap-2">
+          <Circle size={8} fill={color} strokeWidth={0} />
+          {status}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status === 1 ? "enabled" : "disabled";
+      const color = status === "enabled" ? "green" : "red";
 
       return (
         <Badge variant="outline" className="flex items-center gap-2">

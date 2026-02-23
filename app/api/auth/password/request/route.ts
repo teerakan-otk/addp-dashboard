@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
   try {
     const res = await fetch(
-      `${process.env.FLASK_API_URL}/api/v1/auth//password/request`,
+      `${process.env.FLASK_API_URL}/api/auth//password/request`,
       {
         method: "POST",
         headers: {
@@ -30,29 +30,25 @@ export async function POST(req: Request) {
 
     const data = await res.json();
 
-    // If failed, just return
     if (!res.ok)
-      return NextResponse.json(
-        data || "Something went wrong. Try again later",
-        { status: res.status },
-      );
+      return NextResponse.json(data || { message: "Internal server error" }, {
+        status: res.status,
+      });
 
     // set request token
     cookieStore.set("request_token", data.token?.value, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      path: "/",
+      path: "/api/password",
       maxAge: data.token?.expires,
     });
 
-    return NextResponse.json({
-      status: res.status,
-    });
+    return NextResponse.json({ status: res.status });
   } catch {
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
+      { message: "Service unvailable" },
+      { status: 503 },
     );
   }
 }

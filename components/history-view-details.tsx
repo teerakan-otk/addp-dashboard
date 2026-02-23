@@ -11,8 +11,6 @@ export function HistoryViewDetails({ id }: { id: string }) {
 
   if (isLoading) return null;
 
-  // parse value from data(useSWR)
-
   return (
     <div className="space-y-6">
       {/* Header */}

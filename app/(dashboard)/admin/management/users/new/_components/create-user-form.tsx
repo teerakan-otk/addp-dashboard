@@ -244,8 +244,7 @@ export function CreateUserForm() {
                       <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Input
-                      type="number"
-                      placeholder="5"
+                      {...field}
                       id={field.name}
                       aria-invalid={fieldState.invalid}
                       onChange={(e) => field.onChange(Number(e.target.value))}

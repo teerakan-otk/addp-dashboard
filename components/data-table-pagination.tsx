@@ -54,7 +54,7 @@ export function DataTablePagination<TData>({
         </Button>
 
         <span className="text-sm">
-          Page {pageIndex + 1} of {table.getPageCount()}
+          Page {pageIndex + 1} of {table.getPageCount() || 1}
         </span>
 
         <Button

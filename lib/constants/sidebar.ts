@@ -39,7 +39,6 @@ export const sidebarMenu: Record<string, MenuItem[]> = {
       icon: Briefcase,
       children: [
         { type: "item", label: "Projects", href: "/user/management/projects" },
-        { type: "item", label: "DNS", href: "/user/management/dns" },
       ],
     },
     {

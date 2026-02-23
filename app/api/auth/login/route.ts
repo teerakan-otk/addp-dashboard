@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/auth/login`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -27,25 +27,25 @@ export async function POST(req: Request) {
     });
 
     const data = await res.json();
+
     if (!res.ok)
-      return NextResponse.json(
-        data || "Something went wrong. Try again later",
-        { status: res.status },
-      );
+      return NextResponse.json(data || { message: "Internal server error" }, {
+        status: res.status,
+      });
 
     cookieStore.set("access_token", data.token?.value, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: data.token?.expires, // 1 hour
+      maxAge: data.token?.expires,
     });
 
     return NextResponse.json({ status: res.status });
   } catch {
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
+      { message: "Service unvailable" },
+      { status: 503 },
     );
   }
 }

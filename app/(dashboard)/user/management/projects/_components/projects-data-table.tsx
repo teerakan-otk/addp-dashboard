@@ -57,7 +57,7 @@ export function ProjectsDataTable() {
           setGlobalFilter={setGlobalFilter}
         >
           <Button variant="outline" asChild>
-            <Link href={"/admin/management/projects/upload"}>Upload</Link>
+            <Link href={"/user/management/projects/upload"}>Upload</Link>
           </Button>
         </DataTableHeader>
         <DataTable table={table} columns={ProjectsColumns} />
