@@ -67,13 +67,12 @@ export async function PUT(req: Request) {
       }),
     });
 
-    let data: any;
-
     if (!res.ok) {
+      let data;
+
       try {
         data = await res.json();
       } catch {}
-
       return NextResponse.json(data || { message: "Internal server error" }, {
         status: res.status,
       });

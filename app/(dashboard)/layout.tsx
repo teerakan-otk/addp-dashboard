@@ -25,7 +25,7 @@ export default async function DashboardLayout({
       <SidebarInset>
         <AppSidebarHeader />
         <div className="flex flex-1 flex-col gap-6 p-6">
-          <NextTopLoader />
+          <NextTopLoader showSpinner={false} />
           {children}
         </div>
       </SidebarInset>

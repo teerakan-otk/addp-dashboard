@@ -1,16 +1,17 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { ExternalLink, FileText } from "lucide-react";
 import Link from "next/link";
 
-export function DocsCard({ label }: { label: string }) {
+import { Card, CardContent } from "@/components/ui/card";
+import { ExternalLink, FileText } from "lucide-react";
+
+export function ProfileReadDocsCard({ label }: { label: string }) {
   return (
     <Card>
       <CardContent className="flex items-center justify-between">
         {/* Left content */}
         <div className="flex items-center gap-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+          <div className="flex items-center justify-center p-3 rounded-md bg-accent">
             <FileText className="h-5 w-5 text-muted-foreground" />
           </div>
 

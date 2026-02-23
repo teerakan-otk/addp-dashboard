@@ -3,9 +3,8 @@
 import useSWR from "swr";
 import { fetcher } from "@/lib/utils";
 
-import { DocsCard } from "@/components/docs-card";
 import { ProfileInfoCard } from "./profile-info-card";
-import { ProfileContainersCard } from "./profile-containers-card";
+import { ProfileReadDocsCard } from "./profile-read-docs-card";
 import { ProfileDBCard } from "./profile-db-card";
 
 export function Profile() {
@@ -18,14 +17,9 @@ export function Profile() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <ProfileInfoCard data={data} />
-      </div>
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* <ProfileContainersCard containers={data.containers} />
-        <ProfileDBCard database={data.database} /> */}
-        <DocsCard label="Read documentation" />
-      </div>
+      <ProfileInfoCard data={data} />
+      <ProfileDBCard />
+      <ProfileReadDocsCard label="Read documentation" />
     </div>
   );
 }

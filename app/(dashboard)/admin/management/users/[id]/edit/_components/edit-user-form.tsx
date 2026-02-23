@@ -39,7 +39,7 @@ type ApiUserResponse = {
   updated_at: string;
   containers?: {
     used: number;
-    total: number;
+    max: number;
   };
   database?: {
     connected: boolean;
@@ -83,8 +83,8 @@ export function EditUserForm({ id }: EditUserFormProps) {
 
     form.reset(
       {
-        maxContainers: Number(data.containers?.total ?? 0),
-        database: Boolean(data.database?.connected ?? false),
+        maxContainers: Number(data.containers?.max ?? 0),
+        database: Boolean(data.database ?? false),
       },
       { keepDirtyValues: true },
     );
