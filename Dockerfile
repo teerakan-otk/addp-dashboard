@@ -17,8 +17,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # ENV
-ARG FLASK_API_URL
 ENV FLASK_API_URL=$FLASK_API_URL
+ENV JWT_SECERT=$JWT_SECERT
 
 RUN corepack enable pnpm && pnpm run build
 
