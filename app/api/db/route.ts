@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   const token = cookieStore.get("access_token")?.value;
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/db`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/db`, {
       method: "POST",
       headers: {
         authorization: `bearer ${token}`,

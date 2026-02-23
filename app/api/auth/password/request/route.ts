@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
   try {
     const res = await fetch(
-      `${process.env.FLASK_API_URL}/api/auth//password/request`,
+      `${process.env.FLASK_API_URL}/api/v1/auth//password/request`,
       {
         method: "POST",
         headers: {
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     cookieStore.set("request_token", data.token?.value, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "none",
       path: "/api/password",
       maxAge: data.token?.expires,
     });

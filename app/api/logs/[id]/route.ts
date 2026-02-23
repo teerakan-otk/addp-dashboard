@@ -29,7 +29,7 @@ export async function GET(
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/logs/${id}`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/logs/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
