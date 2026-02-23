@@ -18,7 +18,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/containers`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/containers`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
   //   const file = formData.get("file");
   //   if (file) forwardForm.append("file", file);
 
-  //   const res = await fetch(`${process.env.FLASK_API_URL}/api/projects`, {
+  //   const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/projects`, {
   //     method: "POST",
   //     headers: {
   //       Authorization: `Bearer ${token}`,
@@ -128,7 +128,7 @@ export async function POST(req: Request) {
   if (file) forwardForm.append("file", file);
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/test-upload`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/test-upload`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,

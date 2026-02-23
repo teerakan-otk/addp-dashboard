@@ -19,7 +19,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/profile`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/profile`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ export async function PUT(req: Request) {
   const body = await req.json();
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/profile`, {
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/profile`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,

@@ -30,7 +30,7 @@ export async function GET(
 
   try {
     const res = await fetch(
-      `${process.env.FLASK_API_URL}/api/containers/${id}`,
+      `${process.env.FLASK_API_URL}/api/v1/containers/${id}`,
       {
         method: "GET",
         headers: {
