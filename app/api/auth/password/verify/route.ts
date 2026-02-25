@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     cookieStore.set("verify_token", data.token?.value, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: "lax",
       path: "/api/password",
       maxAge: data.token?.expires,
     });

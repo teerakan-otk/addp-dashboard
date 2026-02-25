@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ScanFace } from "lucide-react";
 import { toast } from "sonner";
-import { loginSchema, LoginSchema } from "@/lib/schemas/auth";
+import { loginSchema, LoginSchema } from "@/schemas/auth";
 
 export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);

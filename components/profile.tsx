@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { fetcher } from "@/lib/utils";
+import { fetcher } from "@/lib/api";
 
 import { ProfileInfoCard } from "./profile-info-card";
 import { ProfileReadDocsCard } from "./profile-read-docs-card";

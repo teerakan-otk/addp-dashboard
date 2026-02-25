@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Key } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import { setPasswordSchema, SetPasswordSchema } from "@/lib/schemas/auth";
+import { setPasswordSchema, SetPasswordSchema } from "@/schemas/auth";
 
 export function NewPasswordForm() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);

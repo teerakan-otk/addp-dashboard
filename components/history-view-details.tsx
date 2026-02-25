@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { fetcher } from "@/lib/utils";
+import { fetcher } from "@/lib/api";
 
 export function HistoryViewDetails({ id }: { id: string }) {
   const { data, isLoading } = useSWR(`/api/logs/${id}`, fetcher, {

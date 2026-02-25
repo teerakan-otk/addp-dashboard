@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DynamicTooltip } from "@/components/dynamic-tooltip";
 import { UserPlus } from "lucide-react";
-import { registerSchema, RegisterSchema } from "@/lib/schemas/auth";
+import { registerSchema, RegisterSchema } from "@/schemas/auth";
 import { toast } from "sonner";
 
 export function RegisterForm() {

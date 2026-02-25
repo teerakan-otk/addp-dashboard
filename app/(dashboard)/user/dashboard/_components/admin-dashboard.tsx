@@ -1,56 +1,12 @@
 "use client";
 
 import useSWR from "swr";
-import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { fetcher } from "@/lib/api";
 
-import { fetcher } from "@/lib/utils";
 import { RecentProjectsDataTable } from "./recent-projects-data-table";
-import { Card, CardContent } from "@/components/ui/card";
-
-import {
-  Users,
-  Database,
-  Activity,
-  ExternalLink,
-  Container,
-  Projector,
-  Boxes,
-  Gauge,
-  Briefcase,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-
-type StatCardProps = {
-  value?: any;
-  label: string;
-  Icon: LucideIcon;
-  href?: string;
-};
-
-function StatCard({ value, label, Icon, href }: StatCardProps) {
-  return (
-    <Card>
-      <CardContent className="flex items-center gap-6">
-        {/* Icon */}
-        <div className="bg-muted p-4 rounded-full">
-          <Icon />
-        </div>
-
-        {/* Content */}
-        <div>
-          {href ? (
-            <Link href={href} className="text-2xl font-semibold">
-              {value}
-            </Link>
-          ) : (
-            <p className="text-2xl font-semibold">{value ?? "-"}</p>
-          )}
-          <p className="text-sm text-muted-foreground">{label}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+import { StatCard } from "@/components/stat-card";
+import { Database, Gauge, Briefcase } from "lucide-react";
 
 export function AdminDashboard() {
   const { data, isLoading } = useSWR("/api/stats", fetcher);
@@ -82,6 +38,13 @@ export function AdminDashboard() {
           }
           label="Database Status"
           Icon={Database}
+          className={cn(
+            data.user?.database === 2
+              ? "text-green-500"
+              : data.user?.database === 1
+                ? "text-yellow-500"
+                : "text-destructive",
+          )}
         />
       </div>
 

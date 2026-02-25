@@ -56,27 +56,19 @@ export const UsersColumns: ColumnDef<ColumnProps>[] = [
   },
   {
     accessorKey: "database",
-    header: "Database",
+    header: "Database Status",
     cell: ({ row }) => {
       const database = row.original.database;
       const status =
-        database === 2
-          ? "connected"
-          : database === 1
-            ? "request"
-            : "disconnected";
+        database === 2 ? "active" : database === 1 ? "pending" : "disable";
 
       const color =
-        status === "connected"
-          ? "green"
-          : status === "request"
-            ? "yellow"
-            : "red";
+        database === 2 ? "green" : database === 1 ? "yellow" : "red";
 
       return (
         <Badge variant="outline" className="flex items-center gap-2">
           <Circle size={8} fill={color} strokeWidth={0} />
-          {status}
+          {status.charAt(0).toUpperCase() + status?.slice(1).toLowerCase()}
         </Badge>
       );
     },
@@ -91,7 +83,7 @@ export const UsersColumns: ColumnDef<ColumnProps>[] = [
       return (
         <Badge variant="outline" className="flex items-center gap-2">
           <Circle size={8} fill={color} strokeWidth={0} />
-          {status}
+          {status.charAt(0).toUpperCase() + status?.slice(1).toLowerCase()}
         </Badge>
       );
     },
