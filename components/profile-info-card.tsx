@@ -27,10 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Shield, User2, IdCard } from "lucide-react";
-import {
-  ChangePasswordSchema,
-  changePasswordSchema,
-} from "@/lib/schemas/profile";
+import { ChangePasswordSchema, changePasswordSchema } from "@/schemas/profile";
 import { toast } from "sonner";
 
 type Props = {

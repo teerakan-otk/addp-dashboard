@@ -14,6 +14,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { User2Icon } from "lucide-react";
+import Link from "next/link";
 
 export function AppSidebarAvatar() {
   const router = useRouter();
@@ -53,11 +54,8 @@ export function AppSidebarAvatar() {
             My Account
           </DropdownMenuLabel>
 
-          <DropdownMenuItem
-            onClick={handleProfileLink}
-            className="cursor-pointer"
-          >
-            Profile
+          <DropdownMenuItem asChild>
+            <Link href={profilePath}>Profile</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -65,7 +63,7 @@ export function AppSidebarAvatar() {
 
         <DropdownMenuItem
           onClick={handleLogout}
-          className="text-destructive focus:text-destructive cursor-pointer"
+          className="text-destructive focus:text-destructive"
         >
           Log out
         </DropdownMenuItem>

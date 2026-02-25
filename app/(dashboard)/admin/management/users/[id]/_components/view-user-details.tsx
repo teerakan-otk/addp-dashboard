@@ -2,128 +2,23 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { UserData } from "@/types/api";
 
 import { Badge } from "@/components/ui/badge";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ContainerCard } from "./container-card";
-import {
-  ArrowLeft,
-  Box,
-  Circle,
-  Clock,
-  Database,
-  Pencil,
-  Shield,
-} from "lucide-react";
+import { DatabaseCard } from "./database-card";
+import { ArrowLeft, Pencil, Shield } from "lucide-react";
+import { TimestampCard } from "@/components/timestamp-card";
 
 /* -------------------------------------------------------------------------- */
 /*                                   Types                                    */
 /* -------------------------------------------------------------------------- */
 
-type ContainerData = {
-  used: number;
-  max: number;
-};
-
-type UserData = {
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-  created_at: string;
-  updated_at: string;
-  containers?: ContainerData;
-  database?: number;
-};
-
 type Props = {
   data: UserData;
 };
-
-/* -------------------------------------------------------------------------- */
-/*                                Helper Logic                                */
-/* -------------------------------------------------------------------------- */
-
-function getDatabaseStatus(data?: number) {
-  if (!data) {
-    return { label: "Not connected", color: "red" };
-  }
-
-  if (data === 2) {
-    return { label: "Connected", color: "green" };
-  }
-
-  if (data === 1) {
-    return { label: "Pending Request", color: "yellow" };
-  }
-
-  return { label: "Not connected", color: "red" };
-}
-
-/* -------------------------------------------------------------------------- */
-/*                               Database Card                                */
-/* -------------------------------------------------------------------------- */
-
-function DatabaseCard({ data }: { data?: number }) {
-  const status = getDatabaseStatus(data);
-
-  return (
-    <Card>
-      <CardContent className="space-y-6 pt-6">
-        <div className="flex items-center gap-2">
-          <Database className="h-5 w-5" />
-          <h2 className="font-semibold">Database Instance</h2>
-        </div>
-
-        <div className="flex justify-between text-sm">
-          <span>Status</span>
-
-          <Badge variant="outline" className="flex items-center gap-2">
-            <Circle size={8} fill={status.color} strokeWidth={0} />
-            {status.label}
-          </Badge>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*                           Recent Activity Card                             */
-/* -------------------------------------------------------------------------- */
-
-function RecentActivityCard({
-  createdAt,
-  updatedAt,
-}: {
-  createdAt: string;
-  updatedAt: string;
-}) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Clock className="h-5 w-5" />
-          Recent Activity
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent className="space-y-4">
-        <div>
-          <p className="text-sm text-muted-foreground">Registration Date</p>
-          <p>{createdAt}</p>
-        </div>
-
-        <div>
-          <p className="text-sm text-muted-foreground">Last Update</p>
-          <p>{updatedAt}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 /* -------------------------------------------------------------------------- */
 /*                              Main Component                                */
@@ -166,16 +61,14 @@ export function ViewUserDetails({ data }: Props) {
           </div>
 
           <div className="ml-auto">
-            <Button
-              size="sm"
-              variant="outline"
-              className="flex items-center gap-2"
-              onClick={() =>
-                router.push(`/admin/management/users/${data.id}/edit`)
-              }
-            >
-              <Pencil className="h-4 w-4" />
-              Edit Profile
+            <Button size="sm" variant="outline" asChild>
+              <Link
+                href={`/admin/management/users/${data.id}/edit`}
+                className="flex items-center gap-2"
+              >
+                <Pencil />
+                Edit Profile
+              </Link>
             </Button>
           </div>
         </div>
@@ -187,10 +80,7 @@ export function ViewUserDetails({ data }: Props) {
         <DatabaseCard data={data.database} />
       </div>
 
-      <RecentActivityCard
-        createdAt={data.created_at}
-        updatedAt={data.updated_at}
-      />
+      <TimestampCard createdAt={data.created_at} updatedAt={data.updated_at} />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
-import { AddUserSchema, addUserSchema } from "@/lib/schemas/users";
+import { AddUserSchema, addUserSchema } from "@/schemas/users";
 import {
   Field,
   FieldContent,
@@ -205,12 +205,16 @@ export function CreateUserForm() {
                 name="role"
                 control={form.control}
                 render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
+                  <Field
+                    orientation="responsive"
+                    data-invalid={fieldState.invalid}
+                  >
                     <FieldLabel htmlFor={field.name}>
                       Role
                       <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Select
+                      name={field.name}
                       value={field.value}
                       onValueChange={field.onChange}
                       disabled={isLoading}

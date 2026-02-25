@@ -14,6 +14,7 @@ export default async function DashboardLayout({
 }) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+
   const data = await getRole();
   if (!data) {
     notFound();
