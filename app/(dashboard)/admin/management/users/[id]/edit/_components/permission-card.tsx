@@ -1,9 +1,9 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
-import { EditUserSchema } from "@/schemas/users";
+import { Controller, useWatch } from "react-hook-form";
+import { useMemo } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldContent,
@@ -16,34 +16,63 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
+
+type DatabaseStatus = 0 | 1 | 2 | 3;
 
 type Props = {
-  form: ReturnType<typeof useForm<EditUserSchema>>;
+  form: any;
   isSubmitting: boolean;
+  currentDatabaseState: DatabaseStatus;
 };
 
-const database = [
-  {
-    id: "0",
-    title: "Disable",
-  },
-  {
-    id: "1",
-    title: "Pending",
-  },
-  {
-    id: "2",
-    title: "Active",
-  },
-];
+function getStatusLabel(status: DatabaseStatus) {
+  switch (status) {
+    case 0:
+      return "Disconnected";
+    case 1:
+      return "Pending Activation";
+    case 2:
+      return "Connected";
+    case 3:
+      return "Pending Deactivation";
+  }
+}
 
-export function PermissionsCard({ form, isSubmitting }: Props) {
+function resolveDatabaseTransition(
+  current: DatabaseStatus,
+  enable: boolean,
+): DatabaseStatus {
+  if (enable) {
+    if (current === 2) return 2;
+    return 1;
+  }
+
+  if (current === 0) return 0;
+  return 3;
+}
+
+export function PermissionsCard({
+  form,
+  isSubmitting,
+  currentDatabaseState,
+}: Props) {
+  const enableAccess = useWatch({
+    control: form.control,
+    name: "databaseEnabled",
+  }) as boolean;
+
+  const nextState = useMemo(() => {
+    if (enableAccess === undefined) return currentDatabaseState;
+    return resolveDatabaseTransition(currentDatabaseState, enableAccess);
+  }, [enableAccess, currentDatabaseState]);
+
   return (
     <Card>
       <CardContent>
         <FieldGroup>
+          {/* Max Containers */}
           <Controller
             name="maxContainers"
             control={form.control}
@@ -51,14 +80,18 @@ export function PermissionsCard({ form, isSubmitting }: Props) {
               <FieldSet>
                 <FieldLegend>Max Containers</FieldLegend>
                 <FieldDescription>
-                  Maximum container instances this user can create.
+                  Maximum number of container instances this user can create.
                 </FieldDescription>
+
                 <Field>
                   <Input
                     {...field}
-                    id={field.name}
+                    type="number"
+                    min={0}
+                    disabled={isSubmitting}
                     aria-invalid={fieldState.invalid}
-                    className="w-full max-w-[150px]"
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    className="w-full max-w-40"
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -68,44 +101,57 @@ export function PermissionsCard({ form, isSubmitting }: Props) {
             )}
           />
 
+          {/* Database Access */}
           <Controller
-            name="database"
+            name="databaseEnabled"
             control={form.control}
             render={({ field, fieldState }) => (
-              <FieldSet data-invalid={fieldState.invalid}>
+              <FieldSet>
                 <FieldLegend>Database Access</FieldLegend>
                 <FieldDescription>
-                  Allow external database tunneling.
+                  Enable or disable external database provisioning.
                 </FieldDescription>
+
+                {/* Current State */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    Current Status:
+                  </span>
+                  <Badge variant="outline">
+                    {getStatusLabel(currentDatabaseState)}
+                  </Badge>
+                </div>
+
                 <RadioGroup
-                  name={field.name}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  aria-invalid={fieldState.invalid}
-                  className="md:flex items-center gap-4"
+                  value={String(field.value)}
+                  onValueChange={(val) => field.onChange(val === "true")}
+                  className="grid gap-3 md:grid-cols-2"
                 >
-                  {database.map((item) => (
-                    <FieldLabel
-                      key={item.id}
-                      htmlFor={`form-rhf-radiogroup-${item.id}`}
-                      className="w-full max-w-sm"
-                    >
-                      <Field
-                        orientation="horizontal"
-                        data-invalid={fieldState.invalid}
-                      >
-                        <FieldContent>
-                          <FieldTitle>{item.title}</FieldTitle>
-                        </FieldContent>
-                        <RadioGroupItem
-                          value={item.id}
-                          id={`form-rhf-radiogroup-${item.id}`}
-                          aria-invalid={fieldState.invalid}
-                        />
-                      </Field>
-                    </FieldLabel>
-                  ))}
+                  <FieldLabel>
+                    <Field orientation="horizontal">
+                      <FieldContent>
+                        <FieldTitle>Enable</FieldTitle>
+                        <p className="text-xs text-muted-foreground">
+                          User should have active database access.
+                        </p>
+                      </FieldContent>
+                      <RadioGroupItem value="true" disabled={isSubmitting} />
+                    </Field>
+                  </FieldLabel>
+
+                  <FieldLabel>
+                    <Field orientation="horizontal">
+                      <FieldContent>
+                        <FieldTitle>Disable</FieldTitle>
+                        <p className="text-xs text-muted-foreground">
+                          User should not have database access.
+                        </p>
+                      </FieldContent>
+                      <RadioGroupItem value="false" disabled={isSubmitting} />
+                    </Field>
+                  </FieldLabel>
                 </RadioGroup>
+
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}

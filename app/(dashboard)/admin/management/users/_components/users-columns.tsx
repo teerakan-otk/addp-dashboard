@@ -58,17 +58,41 @@ export const UsersColumns: ColumnDef<ColumnProps>[] = [
     accessorKey: "database",
     header: "Database Status",
     cell: ({ row }) => {
-      const database = row.original.database;
-      const status =
-        database === 2 ? "active" : database === 1 ? "pending" : "disable";
+      const database: number = row.original.database;
 
-      const color =
-        database === 2 ? "green" : database === 1 ? "yellow" : "red";
+      let label = "";
+      let color = "";
+
+      switch (database) {
+        case 0:
+          label = "Disconnected";
+          color = "#9ca3af"; // gray
+          break;
+
+        case 1:
+          label = "Pending Activation";
+          color = "#f59e0b"; // amber
+          break;
+
+        case 2:
+          label = "Connected";
+          color = "#22c55e"; // green
+          break;
+
+        case 3:
+          label = "Pending Deactivation";
+          color = "#f97316"; // orange
+          break;
+
+        default:
+          label = "Unknown";
+          color = "#6b7280";
+      }
 
       return (
         <Badge variant="outline" className="flex items-center gap-2">
           <Circle size={8} fill={color} strokeWidth={0} />
-          {status.charAt(0).toUpperCase() + status?.slice(1).toLowerCase()}
+          {label}
         </Badge>
       );
     },
@@ -78,7 +102,7 @@ export const UsersColumns: ColumnDef<ColumnProps>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status === 1 ? "enabled" : "disabled";
-      const color = status === "enabled" ? "green" : "red";
+      const color = status === "enabled" ? "#22c55e" : "red";
 
       return (
         <Badge variant="outline" className="flex items-center gap-2">

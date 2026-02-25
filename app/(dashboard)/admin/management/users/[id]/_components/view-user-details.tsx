@@ -32,44 +32,26 @@ export function ViewUserDetails({ data }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Navigation */}
-      <Link
-        href="/admin/management/users"
-        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary hover:underline"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Go Back
-      </Link>
-
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <ProfileAvatar username={data.username ?? ""} />
+      <div className="space-y-6">
+        <h1 className="text-2xl font-semibold">View User</h1>
+        <div className="flex items-center gap-4">
+          <ProfileAvatar username={data.username ?? ""} />
 
-        <div className="flex flex-1 items-start">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <p className="text-sm">ID: {data.id}</p>
+          <div className="flex flex-1 items-start">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <p className="text-sm">ID: {data.id}</p>
 
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <Shield className="h-3 w-3" />
-                {formattedRole}
-              </Badge>
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Shield className="h-3 w-3" />
+                  {formattedRole}
+                </Badge>
+              </div>
+
+              <p className="text-sm">Username: {data.username}</p>
+              <p className="text-sm">Email: {data.email}</p>
             </div>
-
-            <p className="text-sm">Username: {data.username}</p>
-            <p className="text-sm">Email: {data.email}</p>
-          </div>
-
-          <div className="ml-auto">
-            <Button size="sm" variant="outline" asChild>
-              <Link
-                href={`/admin/management/users/${data.id}/edit`}
-                className="flex items-center gap-2"
-              >
-                <Pencil />
-                Edit Profile
-              </Link>
-            </Button>
           </div>
         </div>
       </div>
@@ -81,6 +63,13 @@ export function ViewUserDetails({ data }: Props) {
       </div>
 
       <TimestampCard createdAt={data.created_at} updatedAt={data.updated_at} />
+
+      <Button asChild>
+        <Link href="/admin/management/users">
+          <ArrowLeft />
+          Go Back
+        </Link>
+      </Button>
     </div>
   );
 }

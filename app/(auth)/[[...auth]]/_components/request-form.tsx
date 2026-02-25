@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail } from "lucide-react";
@@ -26,21 +25,23 @@ import {
 } from "@/components/ui/field";
 import { resetPasswordSchema, ResetPasswordSchema } from "@/schemas/auth";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export function RequestForm() {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const router = useRouter();
-
-  const form = useForm<ResetPasswordSchema>({
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+    reset,
+  } = useForm<ResetPasswordSchema>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
       username: "",
     },
   });
 
-  async function handleSubmit(values: ResetPasswordSchema) {
-    setIsSubmitting(true);
-
+  async function onSubmit(values: ResetPasswordSchema) {
     try {
       const res = await fetch("/api/auth/password/request", {
         method: "POST",
@@ -48,20 +49,18 @@ export function RequestForm() {
         body: JSON.stringify(values),
       });
 
-      const data = await res.json();
       if (!res.ok) {
-        return toast.error(data.error?.message);
+        throw new Error("Something went wrong. Please try again.");
       }
 
-      toast.success("Send OTP successful");
+      // Always show generic success message
+      toast.success(
+        "If the account exists, a verification code has been sent.",
+      );
 
-      setTimeout(() => {
-        router.push("/password/verify");
-      }, 1500);
+      router.push("/password/verify");
     } catch {
-      return toast.error("Internal server error");
-    } finally {
-      setIsSubmitting(false);
+      toast.error("Unable to process request. Please try again later.");
     }
   }
 
@@ -71,46 +70,45 @@ export function RequestForm() {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
           <Mail className="h-6 w-6 text-primary" />
         </div>
+
         <CardTitle className="text-2xl">Forgot your password?</CardTitle>
+
         <CardDescription>
-          If username is exists. We're send OTP to your email
+          Enter your username and we’ll send you a verification code.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <form id="forgot-password" onSubmit={form.handleSubmit(handleSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Controller
             name="username"
-            control={form.control}
+            control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>Username</FieldLabel>
+
                 <Input
                   {...field}
                   id={field.name}
                   disabled={isSubmitting}
                   aria-invalid={fieldState.invalid}
                 />
+
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
               </Field>
             )}
           />
+
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting ? <Spinner /> : "Send verification code"}
+          </Button>
         </form>
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-4">
-        <Button
-          type="submit"
-          form="forgot-password"
-          disabled={isSubmitting}
-          className="w-full cursor-pointer"
-        >
-          {isSubmitting ? <Spinner /> : "Send reset code"}
-        </Button>
-
-        <FieldDescription className="flex items-center justify-center text-sm">
+      <CardFooter className="flex justify-center">
+        <FieldDescription className="text-sm">
           <Link href="/login" className="hover:underline text-muted-foreground">
             Back to sign in
           </Link>

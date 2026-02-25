@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 /*
  * ----------------------------------------
- * GET USER BY ID
+ * GET
  * ----------------------------------------
  */
 export async function GET(
@@ -55,7 +55,7 @@ export async function GET(
 
 /*
  * ----------------------------------------
- * UPDATE USER BY ID
+ * UPDATE
  * ----------------------------------------
  */
 export async function PUT(
@@ -63,8 +63,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const cookieStore = await cookies();
-
   const token = cookieStore.get("access_token")?.value;
+
   if (!token) {
     return NextResponse.json(
       { message: "Authentication token is required." },
@@ -90,9 +90,8 @@ export async function PUT(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        role: body.role,
-        maxContainers: body.maxContainers,
-        database: body.database,
+        max_containers: body.maxContainers,
+        database: body.databaseEnabled,
       }),
     });
 
@@ -113,7 +112,7 @@ export async function PUT(
 
 /*
  * ----------------------------------------
- * DELETE USER BY ID
+ * DELETE
  * ----------------------------------------
  */
 export async function DELETE(

@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
   try {
     const res = await fetch(
-      `${process.env.FLASK_API_URL}/api/v1/auth//password/verify`,
+      `${process.env.FLASK_API_URL}/api/v1/auth/password/verify`,
       {
         method: "POST",
         headers: {
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      path: "/api/password",
+      path: "/",
       maxAge: data.token?.expires,
     });
 

@@ -53,7 +53,11 @@ export function LoginForm() {
 
       const data = await res.json();
       if (!res.ok) {
-        return toast.error(data.error?.message || data.message);
+        return toast.error(
+          data.error?.message ||
+            data.message ||
+            "Something went wrong. Try again later.",
+        );
       }
 
       router.refresh();
@@ -131,7 +135,7 @@ export function LoginForm() {
           <Button
             type="submit"
             form="login-form"
-            className="w-full cursor-pointer"
+            className="w-full"
             disabled={isSubmitting}
           >
             {isSubmitting ? <Spinner /> : "Log in"}

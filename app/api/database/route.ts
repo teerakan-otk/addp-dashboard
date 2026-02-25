@@ -20,16 +20,22 @@ export async function POST(req: Request) {
       body: JSON.stringify({ action: body.action }),
     });
 
-    const data = await res.json();
+    // Error handler for response 204
+    let data;
 
     if (!res.ok) {
+      try {
+        data = await res.json();
+      } catch {}
+
       return NextResponse.json(data || { message: "Internal server error" }, {
         status: res.status,
       });
     }
 
-    return NextResponse.json(data, { status: res.status });
-  } catch {
+    return NextResponse.json({ status: res.status });
+  } catch (err) {
+    console.error(err);
     return NextResponse.json(
       { message: "Unexpected server error" },
       { status: 500 },

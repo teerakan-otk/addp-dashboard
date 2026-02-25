@@ -62,7 +62,11 @@ export function RegisterForm() {
 
       const data = await res.json();
       if (!res.ok) {
-        return toast.error(data.error?.message || "Unexpected server error");
+        return toast.error(
+          data.error?.message ||
+            data.message ||
+            "Something went wrong. Try again later.",
+        );
       }
 
       toast.success("Register successful");
