@@ -21,7 +21,6 @@ import {
   FieldGroup,
   Field,
   FieldLabel,
-  FieldContent,
   FieldError,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -52,7 +51,7 @@ export function ProfileInfoCard({ data }: Props) {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("/api/profile", {
+      const res = await fetch("/api/password/update", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),

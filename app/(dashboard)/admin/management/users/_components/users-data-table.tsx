@@ -30,7 +30,7 @@ export function UsersDataTable() {
   const [globalFilter, setGlobalFilter] = React.useState("");
 
   const table = useReactTable({
-    data: data?.users || [],
+    data: data ?? [],
     columns: UsersColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

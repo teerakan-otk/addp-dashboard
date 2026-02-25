@@ -1,45 +1,42 @@
-import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 /*
  * ----------------------------------------
- * LOGIN
+ * CHANGE PASSWORD
  * ----------------------------------------
  */
-export async function POST(req: Request) {
+export async function PUT(req: Request) {
   const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
 
   const body = await req.json();
-  if (!body) {
-    return NextResponse.json({ message: "Missing body" }, { status: 400 });
-  }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/auth/login`, {
-      method: "POST",
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/profile`, {
+      method: "PUT",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: body.username,
-        password: body.password,
+        old_password: body.oldPassword,
+        new_password: body.cNewPassword,
       }),
     });
 
-    const data = await res.json();
+    if (!res.ok) {
+      let data;
 
-    if (!res.ok)
+      try {
+        data = await res.json();
+      } catch {}
       return NextResponse.json(data || { message: "Internal server error" }, {
         status: res.status,
       });
+    }
 
-    cookieStore.set("access_token", data.token?.value, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: data.token?.expires,
-    });
+    cookieStore.delete("access_token");
 
     return NextResponse.json({ status: res.status });
   } catch {

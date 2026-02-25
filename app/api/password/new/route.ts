@@ -3,46 +3,45 @@ import { cookies } from "next/headers";
 
 /*
  * ----------------------------------------
- * REQUEST RESET PASSWORD
+ * UPDATE NEW PASSWORD
  * ----------------------------------------
  */
 export async function POST(req: Request) {
   const cookieStore = await cookies();
 
-  const body = await req.json();
-  if (!body) {
-    return NextResponse.json({ message: "Missing body" }, { status: 400 });
+  const token = cookieStore.get("verify_token")?.value;
+  if (!token) {
+    return NextResponse.json(
+      { message: "Authentication token is required." },
+      { status: 401 },
+    );
   }
+
+  const body = await req.json();
 
   try {
     const res = await fetch(
-      `${process.env.FLASK_API_URL}/api/v1/auth/password/request`,
+      `${process.env.FLASK_API_URL}/api/v1/password/new`,
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: body.username,
+          password: body.password,
         }),
       },
     );
 
     const data = await res.json();
-
     if (!res.ok)
       return NextResponse.json(data || { message: "Internal server error" }, {
         status: res.status,
       });
 
-    // set request token
-    cookieStore.set("request_token", data.token?.value, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: data.token?.expires,
-    });
+    // revoke verify token
+    cookieStore.delete("verify_token");
 
     return NextResponse.json({ status: res.status });
   } catch {

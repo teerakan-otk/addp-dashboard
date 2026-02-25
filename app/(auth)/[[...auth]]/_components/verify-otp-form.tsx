@@ -48,7 +48,7 @@ export function VerifyOTPForm() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("/api/auth/password/verify", {
+      const res = await fetch("/api/password/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),

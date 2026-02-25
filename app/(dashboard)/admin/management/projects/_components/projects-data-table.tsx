@@ -30,7 +30,7 @@ export function ProjectsDataTable() {
   const [globalFilter, setGlobalFilter] = React.useState("");
 
   const table = useReactTable({
-    data: data?.containers || [],
+    data: data ?? [],
     columns: ProjectsColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

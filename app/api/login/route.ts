@@ -3,45 +3,43 @@ import { cookies } from "next/headers";
 
 /*
  * ----------------------------------------
- * UPDATE NEW PASSWORD
+ * LOGIN
  * ----------------------------------------
  */
 export async function POST(req: Request) {
   const cookieStore = await cookies();
 
-  const token = cookieStore.get("verify_token")?.value;
-  if (!token) {
-    return NextResponse.json(
-      { message: "Authentication token is required." },
-      { status: 401 },
-    );
+  const body = await req.json();
+  if (!body) {
+    return NextResponse.json({ message: "Missing body" }, { status: 400 });
   }
 
-  const body = await req.json();
-
   try {
-    const res = await fetch(
-      `${process.env.FLASK_API_URL}/api/v1/auth/password/new`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          password: body.password,
-        }),
+    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        username: body.username,
+        password: body.password,
+      }),
+    });
 
     const data = await res.json();
+
     if (!res.ok)
       return NextResponse.json(data || { message: "Internal server error" }, {
         status: res.status,
       });
 
-    // revoke verify token
-    cookieStore.delete("verify_token");
+    cookieStore.set("access_token", data.token?.value, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: data.token?.expires,
+    });
 
     return NextResponse.json({ status: res.status });
   } catch {

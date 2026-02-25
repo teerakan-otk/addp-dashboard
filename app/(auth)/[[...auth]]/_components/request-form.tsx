@@ -43,7 +43,7 @@ export function RequestForm() {
 
   async function onSubmit(values: ResetPasswordSchema) {
     try {
-      const res = await fetch("/api/auth/password/request", {
+      const res = await fetch("/api/password/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),

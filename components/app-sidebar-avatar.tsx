@@ -31,7 +31,7 @@ export function AppSidebarAvatar() {
   }, [router, profilePath]);
 
   async function handleLogout() {
-    const response = await fetch("/api/auth/logout", {
+    const response = await fetch("/api/logout", {
       method: "POST",
     });
 
