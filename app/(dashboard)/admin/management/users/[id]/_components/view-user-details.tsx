@@ -9,7 +9,7 @@ import { ProfileAvatar } from "@/components/profile-avatar";
 import { Button } from "@/components/ui/button";
 import { ContainerCard } from "./container-card";
 import { DatabaseCard } from "./database-card";
-import { ArrowLeft, Pencil, Shield } from "lucide-react";
+import { ArrowLeft, Shield } from "lucide-react";
 import { TimestampCard } from "@/components/timestamp-card";
 
 /* -------------------------------------------------------------------------- */
@@ -25,8 +25,6 @@ type Props = {
 /* -------------------------------------------------------------------------- */
 
 export function ViewUserDetails({ data }: Props) {
-  const router = useRouter();
-
   const formattedRole =
     data.role?.charAt(0).toUpperCase() + data.role?.slice(1).toLowerCase();
 
@@ -64,10 +62,9 @@ export function ViewUserDetails({ data }: Props) {
 
       <TimestampCard createdAt={data.created_at} updatedAt={data.updated_at} />
 
-      <Button asChild>
+      <Button variant="outline" asChild>
         <Link href="/admin/management/users">
-          <ArrowLeft />
-          Go Back
+          Cancel
         </Link>
       </Button>
     </div>
