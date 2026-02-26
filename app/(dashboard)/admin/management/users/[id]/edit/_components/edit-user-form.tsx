@@ -71,14 +71,14 @@ export function EditUserForm({ id }: EditUserFormProps) {
       const result = await res.json();
 
       if (!res.ok) {
-        toast.error(result?.message ?? "Failed to update user.");
+        toast.error(result?.error?.message ?? result?.message);
         return;
       }
 
       toast.success("User settings updated successfully.");
       router.push("/admin/management/users");
-    } catch (error) {
-      toast.error("Internal server error.");
+    } catch {
+      toast.error("Something went wrong. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
