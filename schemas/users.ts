@@ -10,27 +10,12 @@ export type EditUserSchema = z.infer<typeof editUserSchema>;
 export const addUserSchema = z
   .object({
     username: z.string().min(1, "Username is required").trim(),
-
-    email: z.string().email("Invalid email address"),
-
+    email: z.email("Invalid email address"),
     password: z.string().min(8, "Must be at least 8 characters long."),
-
     cPassword: z.string().min(8, "Must be at least 8 characters long."),
-
     role: z.string(),
-
-    maxContainers: z.coerce
-      .number()
-      .int()
-      .min(0, "Max containers must be 0 or greater"),
-
-    // For CREATE: only allow final states
-    database: z.coerce
-      .number()
-      .int()
-      .refine((val) => [0, 2].includes(val), {
-        message: "Invalid database state",
-      }),
+    maxContainers: z.number().min(0, "Max containers must be 0 or greater"),
+    database: z.number().refine((val) => [0, 2].includes(val), {message: "Invalid database state",}),
   })
   .superRefine(({ password, cPassword }, ctx) => {
     if (password !== cPassword) {

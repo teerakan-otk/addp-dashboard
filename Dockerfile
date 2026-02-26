@@ -16,7 +16,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN corepack enable pnpm && pnpm run build
+RUN corepack enable pnpm && pnpm build
 
 # Stage 3: Runner
 FROM node:20-alpine AS runner
