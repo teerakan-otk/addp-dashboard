@@ -1,52 +1,67 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-/*
- * ----------------------------------------
- * UPDATE NEW PASSWORD
- * ----------------------------------------
- */
 export async function POST(req: Request) {
   const cookieStore = await cookies();
 
+  // Get verify token from cookie
   const token = cookieStore.get("verify_token")?.value;
   if (!token) {
     return NextResponse.json(
-      { message: "Authentication token is required." },
+      { message: "Missing Authorization Header" },
       { status: 401 },
     );
   }
 
+  // Parse request body
   const body = await req.json();
+  if (!body) {
+    return NextResponse.json(
+      { message: "Missing required fields" },
+      { status: 400 }
+    );
+  }
 
   try {
+    // Call Flask API password/new endpoint
     const res = await fetch(
-      `${process.env.FLASK_API_URL}/api/v1/password/new`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          password: body.password,
-        }),
+      `${process.env.FLASK_API_URL}/password/new`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        password: body.password,
+      }),
+    });
 
-    const data = await res.json();
-    if (!res.ok)
-      return NextResponse.json(data || { message: "Internal server error" }, {
+    // Parse response body
+    let data: any;
+
+    // Handle non-JSON response
+    try {
+      data = await res.json();
+    } catch {
+      return NextResponse.json({ message: "Unexpected error" }, { status: 500 });
+    }
+
+    // Handle non-OK response
+    if (!res.ok) {
+      return NextResponse.json(data || { message: "Internal Server Error" }, {
         status: res.status,
       });
+    }
 
-    // revoke verify token
+    // Delete verify token
     cookieStore.delete("verify_token");
 
+    // Return success response
     return NextResponse.json({ status: res.status });
   } catch {
+    // Handle network errors
     return NextResponse.json(
-      { message: "Service unvailable" },
+      { message: "Service Unavailable" },
       { status: 503 },
     );
   }

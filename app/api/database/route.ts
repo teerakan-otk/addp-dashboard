@@ -3,15 +3,28 @@ import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
 
+  // Get access token from cookie
+  const token = cookieStore.get("access_token")?.value;
+  if (!token) {
+    return NextResponse.json(
+      { message: "Missing Authorization Header" },
+      { status: 401 },
+    );
+  }
+
+  // Parse request body
   const body = await req.json();
   if (!body) {
-    return NextResponse.json({ message: "Missing body" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Missing required fields" },
+      { status: 400 }
+    );
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/database`, {
+    // Call Flask API database endpoint
+    const res = await fetch(`${process.env.FLASK_API_URL}/database`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -20,25 +33,30 @@ export async function POST(req: Request) {
       body: JSON.stringify({ action: body.action }),
     });
 
-    // Error handler for response 204
-    let data;
+    // Parse response body
+    let data: any;
 
+    // Handle non-JSON response
+    try {
+      data = await res.json();
+    } catch {
+      return NextResponse.json({ message: "Unexpected error" }, { status: 500 });
+    }
+
+    // Handle non-OK response
     if (!res.ok) {
-      try {
-        data = await res.json();
-      } catch {}
-
-      return NextResponse.json(data || { message: "Internal server error" }, {
+      return NextResponse.json(data || { message: "Internal Server Error" }, {
         status: res.status,
       });
     }
 
-    return NextResponse.json({ status: res.status });
-  } catch (err) {
-    console.error(err);
+    // Return success response
+    return NextResponse.json(data, { status: res.status });
+  } catch {
+    // Handle network errors
     return NextResponse.json(
-      { message: "Unexpected server error" },
-      { status: 500 },
+      { message: "Service Unavailable" },
+      { status: 503 },
     );
   }
 }

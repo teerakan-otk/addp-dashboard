@@ -1,21 +1,21 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-/*
- * ----------------------------------------
- * REGISTER ACCOUNT
- * ----------------------------------------
- */
 export async function POST(req: Request) {
   const cookieStore = await cookies();
 
+  // Parse request body
   const body = await req.json();
   if (!body) {
-    return NextResponse.json({ message: "Missing body" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Missing required fields" },
+      { status: 400 }
+    );
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/register`, {
+    // Call Flask API register endpoint
+    const res = await fetch(`${process.env.FLASK_API_URL}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -28,9 +28,24 @@ export async function POST(req: Request) {
       }),
     });
 
-    const data = await res.json();
-    if (!res.ok) return NextResponse.json(data, { status: res.status });
+    // Parse response body
+    let data: any;
 
+    // Handle non-JSON response
+    try {
+      data = await res.json();
+    } catch {
+      return NextResponse.json({ message: "Unexpected error" }, { status: 500 });
+    }
+
+    // Handle non-OK response
+    if (!res.ok) {
+      return NextResponse.json(data || { message: "Internal Server Error" }, {
+        status: res.status,
+      });
+    }
+
+    // Set access token
     cookieStore.set("access_token", data.token?.value, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -39,11 +54,13 @@ export async function POST(req: Request) {
       maxAge: data.token?.expires, // 1 hour
     });
 
-    return NextResponse.json(data, { status: res.status });
+    // Return success response
+    return NextResponse.json({ status: res.status });
   } catch {
+    // Handle network errors
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
+      { message: "Service Unavailable" },
+      { status: 503 },
     );
   }
 }

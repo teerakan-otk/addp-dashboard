@@ -1,19 +1,31 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-/*
- * ----------------------------------------
- * CHANGE PASSWORD
- * ----------------------------------------
- */
+
 export async function PUT(req: Request) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
 
+  // Get access token from cookie
+  const token = cookieStore.get("access_token")?.value;
+  if (!token) {
+    return NextResponse.json(
+      { message: "Missing Authorization Header" },
+      { status: 401 },
+    );
+  }
+
+  // Parse request body
   const body = await req.json();
+  if (!body) {
+    return NextResponse.json(
+      { message: "Missing required fields" },
+      { status: 400 }
+    );
+  }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/profile`, {
+    // Call Flask API profile endpoint
+    const res = await fetch(`${process.env.FLASK_API_URL}/profile`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -25,23 +37,32 @@ export async function PUT(req: Request) {
       }),
     });
 
-    if (!res.ok) {
-      let data;
+    // Parse response body
+    let data: any;
 
-      try {
-        data = await res.json();
-      } catch {}
-      return NextResponse.json(data || { message: "Internal server error" }, {
+    // Handle non-JSON response
+    try {
+      data = await res.json();
+    } catch {
+      return NextResponse.json({ message: "Unexpected error" }, { status: 500 });
+    }
+
+    // Handle non-OK response
+    if (!res.ok) {
+      return NextResponse.json(data || { message: "Internal Server Error" }, {
         status: res.status,
       });
     }
 
+    // Delete access token
     cookieStore.delete("access_token");
 
+    // Return success response
     return NextResponse.json({ status: res.status });
   } catch {
+    // Handle network errors
     return NextResponse.json(
-      { message: "Service unvailable" },
+      { message: "Service Unavailable" },
       { status: 503 },
     );
   }

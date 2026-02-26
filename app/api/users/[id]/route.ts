@@ -1,35 +1,34 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-/*
- * ----------------------------------------
- * GET
- * ----------------------------------------
- */
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const cookieStore = await cookies();
 
+  // Get access token from cookie
   const token = cookieStore.get("access_token")?.value;
   if (!token) {
     return NextResponse.json(
-      { message: "Authentication token is required." },
+      { message: "Missing Authorization Header" },
       { status: 401 },
     );
   }
 
+  // Get user ID from params
   const { id } = await params;
   if (!id) {
     return NextResponse.json(
-      { message: "Missing required parameter." },
+      { message: "Missing required params" },
       { status: 400 },
     );
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users/${id}`, {
+    // Call Flask API users endpoint
+    const res = await fetch(`${process.env.FLASK_API_URL}/users/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -37,53 +36,70 @@ export async function GET(
       },
     });
 
-    const data = await res.json();
-    if (!res.ok)
-      return NextResponse.json(
-        data || "Something went wrong. Try again later",
-        { status: res.status },
-      );
+    // Parse response body
+    let data: any;
 
+    // Handle non-JSON response
+    try {
+      data = await res.json();
+    } catch {
+      return NextResponse.json({ message: "Unexpected error" }, { status: 500 });
+    }
+
+    // Handle non-OK response
+    if (!res.ok) {
+      return NextResponse.json(data || { message: "Internal Server Error" }, {
+        status: res.status,
+      });
+    }
+
+    // Return success response
     return NextResponse.json(data, { status: res.status });
   } catch {
+    // Handle network errors
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
+      { message: "Service Unavailable" },
+      { status: 503 },
     );
   }
 }
 
-/*
- * ----------------------------------------
- * UPDATE
- * ----------------------------------------
- */
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
 
+  // Get access token from cookie
+  const token = cookieStore.get("access_token")?.value;
   if (!token) {
     return NextResponse.json(
-      { message: "Authentication token is required." },
+      { message: "Missing Authorization Header" },
       { status: 401 },
     );
   }
 
+  // Get user ID from params
   const { id } = await params;
   if (!id) {
     return NextResponse.json(
-      { message: "Missing required parameter." },
+      { message: "Missing required params" },
       { status: 400 },
     );
   }
 
+  // Parse request body
   const body = await req.json();
+  if (!body) {
+    return NextResponse.json(
+      { message: "Missing required fields" },
+      { status: 400 }
+    );
+  }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users/${id}`, {
+    // Call Flask API users endpoint
+    const res = await fetch(`${process.env.FLASK_API_URL}/users/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -95,50 +111,69 @@ export async function PUT(
       }),
     });
 
-    if (!res.ok)
+    // Handle 204 response
+    if (res.status === 204) {
       return NextResponse.json(
-        { message: "Something went wrong. Try again later" },
-        { status: res.status },
+        { message: "User updated successfully" },
+        { status: 200 }
       );
+    }
 
-    return NextResponse.json({ status: res.status });
+    // Parse response body
+    let data: any;
+
+    // Handle non-JSON response
+    try {
+      data = await res.json();
+    } catch {
+      // Ignore JSON parse errors (could be empty body)
+    }
+
+    // Handle non-OK response
+    if (!res.ok) {
+      return NextResponse.json(data || { message: "Internal Server Error" }, {
+        status: res.status,
+      });
+    }
+
+    // Return success response
+    return NextResponse.json(data, { status: res.status });
   } catch {
+    // Handle network errors
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
+      { message: "Service Unavailable" },
+      { status: 503 },
     );
   }
 }
 
-/*
- * ----------------------------------------
- * DELETE
- * ----------------------------------------
- */
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const cookieStore = await cookies();
 
+  // Get access token from cookie
   const token = cookieStore.get("access_token")?.value;
   if (!token) {
     return NextResponse.json(
-      { message: "Authentication token is required." },
+      { message: "Missing Authorization Header" },
       { status: 401 },
     );
   }
 
+  // Get user ID from params
   const { id } = await params;
   if (!id) {
     return NextResponse.json(
-      { message: "Missing required parameter." },
+      { message: "Missing required params" },
       { status: 400 },
     );
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users/${id}`, {
+    // Call Flask API users endpoint
+    const res = await fetch(`${process.env.FLASK_API_URL}/users/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -146,17 +181,38 @@ export async function DELETE(
       },
     });
 
-    if (!res.ok)
+    // Handle 204 response
+    if (res.status === 204) {
       return NextResponse.json(
-        { message: "Something went wrong. Try again later" },
-        { status: res.status },
+        { message: "User deleted successfully" },
+        { status: 200 }
       );
+    }
 
+    // Parse response body
+    let data: any;
+
+    // Handle non-JSON response
+    try {
+      data = await res.json();
+    } catch {
+      return NextResponse.json({ message: "Unexpected error" }, { status: 500 });
+    }
+
+    // Handle non-OK response
+    if (!res.ok) {
+      return NextResponse.json(data || { message: "Internal Server Error" }, {
+        status: res.status,
+      });
+    }
+
+    // Return success response
     return NextResponse.json({ status: res.status });
   } catch {
+    // Handle network errors
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
+      { message: "Service Unavailable" },
+      { status: 503 },
     );
   }
 }

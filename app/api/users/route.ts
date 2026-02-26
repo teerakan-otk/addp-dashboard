@@ -1,25 +1,21 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getDefaultMessage } from "@/lib/api";
 
-/*
- * ----------------------------------------
- * GET ALL USERS
- * ----------------------------------------
- */
 export async function GET(req: Request) {
   const cookieStore = await cookies();
 
+  // Get access token from cookie
   const token = cookieStore.get("access_token")?.value;
   if (!token) {
     return NextResponse.json(
-      { message: "Authentication token is required." },
+      { message: "Missing Authorization Header" },
       { status: 401 },
     );
   }
 
   try {
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users`, {
+    // Call Flask API users endpoint
+    const res = await fetch(`${process.env.FLASK_API_URL}/users`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -27,83 +23,58 @@ export async function GET(req: Request) {
       },
     });
 
-    const data = await res.json();
-    if (!res.ok)
-      return NextResponse.json(
-        data || "Something went wrong. Try again later",
-        { status: res.status },
-      );
+    // Parse response body
+    let data: any;
 
+    // Handle non-JSON response
+    try {
+      data = await res.json();
+    } catch {
+      return NextResponse.json({ message: "Unexpected error" }, { status: 500 });
+    }
+
+    // Handle non-OK response
+    if (!res.ok) {
+      return NextResponse.json(data || { message: "Internal Server Error" }, {
+        status: res.status,
+      });
+    }
+
+    // Return success response
     return NextResponse.json(data, { status: res.status });
   } catch {
+    // Handle network errors
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
+      { message: "Service Unavailable" },
+      { status: 503 },
     );
   }
 }
 
-/*
- * ----------------------------------------
- * CREATE USER
- * ----------------------------------------
- */
-// export async function POST(req: Request) {
-//   const cookieStore = await cookies();
-
-//   const token = cookieStore.get("access_token")?.value;
-//   if (!token) {
-//     return NextResponse.json(
-//       { message: "Authentication token is required." },
-//       { status: 401 },
-//     );
-//   }
-
-//   const body = await req.json();
-//   if (!body) {
-//     return NextResponse.json({ message: "Missing body" }, { status: 400 });
-//   }
-
-//   try {
-//     const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users`, {
-//       method: "POST",
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         username: body.username,
-//         email: body.email,
-//         password: body.password,
-//         role: body.role,
-//         maxContainers: body.maxContainers,
-//         database: body.database,
-//       }),
-//     });
-
-//     const data = await res.json();
-//     if (!res.ok)
-//       return NextResponse.json(
-//         data || { message: "Something went wrong. Try again later" },
-//         { status: res.status },
-//       );
-
-//     return NextResponse.json({ status: res.status });
-//   } catch {
-//     return NextResponse.json(
-//       { message: "Internal server error" },
-//       { status: 500 },
-//     );
-//   }
-// }
-
 export async function POST(req: Request) {
-  try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("access_token")?.value; // Fixed typo: access_toke -> access_token
-    const body = await req.json();
+  const cookieStore = await cookies();
 
-    const res = await fetch(`${process.env.FLASK_API_URL}/api/v1/users`, {
+  // Get access token from cookie
+  const token = cookieStore.get("access_token")?.value;
+  if (!token) {
+    return NextResponse.json(
+      { message: "Missing Authorization Header" },
+      { status: 401 },
+    );
+  }
+
+  // Parse request body
+  const body = await req.json();
+  if (!body) {
+    return NextResponse.json(
+      { message: "Missing required fields" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Call Flask API users endpoint
+    const res = await fetch(`${process.env.FLASK_API_URL}/users`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -112,32 +83,29 @@ export async function POST(req: Request) {
       body: JSON.stringify(body),
     });
 
-    // 1. Safely handle empty or non-JSON responses
-    const contentType = res.headers.get("content-type");
-    let data = null;
+    // Parse response body
+    let data: any;
 
-    if (contentType && contentType.includes("application/json")) {
+    // Handle non-JSON response
+    try {
       data = await res.json();
+    } catch {
+      return NextResponse.json({ message: "Unexpected error" }, { status: 500 });
     }
 
-    // 2. Handle non-OK responses (400s, 500s)
+    // Handle non-OK response
     if (!res.ok) {
-      const errorMessage =
-        data?.error?.message || data?.message || getDefaultMessage(res.status);
-
-      return NextResponse.json(
-        { message: errorMessage },
-        { status: res.status },
-      );
+      return NextResponse.json(data || { message: "Internal Server Error" }, {
+        status: res.status,
+      });
     }
 
-    // 3. Success case
-    return NextResponse.json(data || { success: true }, { status: res.status });
-  } catch (error) {
-    // 4. Handle Network timeouts or JSON parsing errors
-    console.error("API Route Error:", error);
+    // Return success response
+    return NextResponse.json(data, { status: res.status });
+  } catch {
+    // Handle network errors
     return NextResponse.json(
-      { message: "Could not connect to the backend service." },
+      { message: "Service Unavailable" },
       { status: 503 },
     );
   }
