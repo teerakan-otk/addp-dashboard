@@ -5,10 +5,7 @@ WORKDIR /app
 
 # Copy package.json and lock.yaml
 COPY package.json pnpm-lock.yaml* ./
-RUN \
-  if [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+RUN corepack enable pnpm && pnpm i --frozen-lockfile
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
