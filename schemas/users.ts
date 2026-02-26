@@ -1,25 +1,21 @@
 import { z } from "zod";
 
 export const editUserSchema = z.object({
-  maxContainers: z.number(),
-  database: z.string(),
+  maxContainers: z.number().min(0),
+  databaseEnabled: z.boolean(),
 });
 
 export type EditUserSchema = z.infer<typeof editUserSchema>;
 
 export const addUserSchema = z
   .object({
-    username: z.string().min(1, "Username is required"),
-    email: z.email(),
+    username: z.string().min(1, "Username is required").trim(),
+    email: z.email("Invalid email address"),
     password: z.string().min(8, "Must be at least 8 characters long."),
     cPassword: z.string().min(8, "Must be at least 8 characters long."),
-    role: z.string().refine((val) => val !== "", {
-      message: "Role is required",
-    }),
-    maxContainers: z
-      .number()
-      .min(0, "Number of max container(s) must be at least 1"),
-    database: z.boolean(),
+    role: z.string(),
+    maxContainers: z.number().min(0, "Max containers must be 0 or greater"),
+    database: z.number().refine((val) => [0, 2].includes(val), {message: "Invalid database state",}),
   })
   .superRefine(({ password, cPassword }, ctx) => {
     if (password !== cPassword) {

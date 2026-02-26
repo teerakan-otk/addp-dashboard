@@ -48,15 +48,19 @@ export function VerifyOTPForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/password/verify", {
+      const res = await fetch("/api/password/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
 
-      const result = await response.json();
-      if (!response.ok) {
-        return toast.error(result.error?.message);
+      const data = await res.json();
+      if (!res.ok) {
+        return toast.error(
+          data.error?.message ||
+            data.message ||
+            "Something went wrong. Try again later.",
+        );
       }
 
       toast.success("Verify OTP successful");
@@ -73,14 +77,18 @@ export function VerifyOTPForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/password/resend", {
+      const res = await fetch("/api/auth/password/resend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
 
-      const result = await response.json();
-      if (!response.ok) {
-        return toast.error(result.error?.message);
+      const data = await res.json();
+      if (!res.ok) {
+        return toast.error(
+          data.error?.message ||
+            data.message ||
+            "Something went wrong. Try again later.",
+        );
       }
 
       toast.message("OTP resent successfully");

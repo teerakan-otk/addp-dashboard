@@ -31,7 +31,7 @@ export function HistoryDataTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
-    data: data?.activity_logs || [],
+    data: data ?? [],
     columns: HistoryColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

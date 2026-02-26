@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+
+export async function PUT(req: Request) {
   const cookieStore = await cookies();
 
   // Get access token from cookie
@@ -13,14 +14,27 @@ export async function GET(req: Request) {
     );
   }
 
+  // Parse request body
+  const body = await req.json();
+  if (!body) {
+    return NextResponse.json(
+      { message: "Missing required fields" },
+      { status: 400 }
+    );
+  }
+
   try {
     // Call Flask API profile endpoint
     const res = await fetch(`${process.env.FLASK_API_URL}/profile`, {
-      method: "GET",
+      method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        old_password: body.oldPassword,
+        new_password: body.cNewPassword,
+      }),
     });
 
     // Parse response body
@@ -40,8 +54,11 @@ export async function GET(req: Request) {
       });
     }
 
+    // Delete access token
+    cookieStore.delete("access_token");
+
     // Return success response
-    return NextResponse.json(data, { status: res.status });
+    return NextResponse.json({ status: res.status });
   } catch {
     // Handle network errors
     return NextResponse.json(

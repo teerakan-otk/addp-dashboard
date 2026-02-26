@@ -43,15 +43,19 @@ export function NewPasswordForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/password/new", {
+      const res = await fetch("/api/password/new", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
 
-      const result = await response.json();
-      if (!response.ok) {
-        return toast.error(result.error?.message);
+      const data = await res.json();
+      if (!res.ok) {
+        return toast.error(
+          data.error?.message ||
+            data.message ||
+            "Something went wrong. Try again later.",
+        );
       }
 
       toast.success("Set password successful");

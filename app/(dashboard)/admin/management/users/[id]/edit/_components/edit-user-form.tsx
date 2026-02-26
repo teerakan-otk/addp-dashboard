@@ -14,7 +14,6 @@ import { TimestampCard } from "@/components/timestamp-card";
 import { UserInfo } from "./user-info";
 import { PermissionsCard } from "./permission-card";
 import { Button } from "@/components/ui/button";
-import * as z from "zod";
 
 type EditUserFormProps = {
   id: string;
@@ -33,7 +32,7 @@ export function EditUserForm({ id }: EditUserFormProps) {
     resolver: zodResolver(editUserSchema),
     defaultValues: {
       maxContainers: 0,
-      database: "",
+      databaseEnabled: false,
     },
   });
 
@@ -44,10 +43,12 @@ export function EditUserForm({ id }: EditUserFormProps) {
   useEffect(() => {
     if (!data) return;
 
+    const dbState = Number(data.database ?? 0);
+
     form.reset(
       {
         maxContainers: Number(data.containers?.max ?? 0),
-        database: String(data.database ?? undefined),
+        databaseEnabled: dbState === 1 || dbState === 2,
       },
       { keepDirtyValues: true },
     );
@@ -70,14 +71,14 @@ export function EditUserForm({ id }: EditUserFormProps) {
       const result = await res.json();
 
       if (!res.ok) {
-        toast.error(result?.message ?? "Failed to update user.");
+        toast.error(result?.error?.message ?? result?.message);
         return;
       }
 
       toast.success("User settings updated successfully.");
       router.push("/admin/management/users");
-    } catch (error) {
-      toast.error("Internal server error.");
+    } catch {
+      toast.error("Something went wrong. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
@@ -101,7 +102,11 @@ export function EditUserForm({ id }: EditUserFormProps) {
         onSubmit={form.handleSubmit(handleUpdate)}
         className="space-y-6"
       >
-        <PermissionsCard form={form} isSubmitting={isSubmitting} />
+        <PermissionsCard
+          form={form}
+          isSubmitting={isSubmitting}
+          currentDatabaseState={data.database}
+        />
 
         <TimestampCard
           createdAt={data.created_at}

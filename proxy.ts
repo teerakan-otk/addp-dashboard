@@ -1,11 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-/* --------------------------------------------------
- * Route Configuration
- * -------------------------------------------------- */
+/* -------------------------------------------------- */
+/* Route Configuration */
+/* -------------------------------------------------- */
 
-const AUTH_ROUTES = ["/login", "/register", "/password"];
+const PUBLIC_AUTH_ROUTES = ["/login", "/register"];
+const PASSWORD_ROUTES = [
+  "/password/request",
+  "/password/verify",
+  "/password/new",
+];
 
 const ROLE_DASHBOARD = {
   admin: "/admin/dashboard",
@@ -14,48 +19,85 @@ const ROLE_DASHBOARD = {
 
 type Role = keyof typeof ROLE_DASHBOARD;
 
-/* --------------------------------------------------
- * JWT Configuration (Edge Compatible)
- * -------------------------------------------------- */
+/* -------------------------------------------------- */
+/* JWT Config */
+/* -------------------------------------------------- */
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-/* --------------------------------------------------
- * Helpers
- * -------------------------------------------------- */
+/* -------------------------------------------------- */
+/* Helpers */
+/* -------------------------------------------------- */
 
 const redirect = (path: string, req: NextRequest) =>
   NextResponse.redirect(new URL(path, req.url));
 
-const isAuthRoute = (pathname: string) =>
-  AUTH_ROUTES.some(
+const isPublicAuthRoute = (pathname: string) =>
+  PUBLIC_AUTH_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
 
-/* --------------------------------------------------
- * Middleware
- * -------------------------------------------------- */
+const isPasswordRoute = (pathname: string) =>
+  PASSWORD_ROUTES.some((route) => pathname.startsWith(route));
+
+/* -------------------------------------------------- */
+/* Proxy */
+/* -------------------------------------------------- */
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const token = req.cookies.get("access_token")?.value;
+  const requestToken = req.cookies.get("request_token")?.value;
+  const verifyToken = req.cookies.get("verify_token")?.value;
 
-  /* ---------------------------------------------
-   * 1️⃣ No token → only allow auth routes
-   * --------------------------------------------- */
+  /* --------------------------------------------------
+   * PASSWORD FLOW PROTECTION (Always evaluate first)
+   * -------------------------------------------------- */
 
-  if (!token) {
-    if (!isAuthRoute(pathname)) {
-      return redirect("/login", req);
+  if (pathname.startsWith("/password")) {
+    // Logged-in users cannot access password reset
+    if (token) {
+      try {
+        const { payload } = await jwtVerify(token, JWT_SECRET);
+        const role = payload.role as Role;
+        return redirect(ROLE_DASHBOARD[role], req);
+      } catch {
+        // ignore invalid token here
+      }
+    }
+
+    // /password/verify requires request_token
+    if (pathname.startsWith("/password/verify")) {
+      if (!requestToken) {
+        return redirect("/password/request", req);
+      }
+    }
+
+    // /password/new requires verify_token
+    if (pathname.startsWith("/password/new")) {
+      if (!verifyToken) {
+        return redirect("/password/request", req);
+      }
     }
 
     return NextResponse.next();
   }
 
-  /* ---------------------------------------------
-   * 2️⃣ Verify JWT (also checks expiration)
-   * --------------------------------------------- */
+  /* --------------------------------------------------
+   * No access_token → allow only public auth routes
+   * -------------------------------------------------- */
+
+  if (!token) {
+    if (!isPublicAuthRoute(pathname)) {
+      return redirect("/login", req);
+    }
+    return NextResponse.next();
+  }
+
+  /* --------------------------------------------------
+   * Verify JWT
+   * -------------------------------------------------- */
 
   let role: Role;
 
@@ -79,19 +121,17 @@ export async function proxy(req: NextRequest) {
     return res;
   }
 
-  /* ---------------------------------------------
-   * 3️⃣ Prevent auth users from visiting:
-   *    - auth pages
-   *    - forbidden page
-   * --------------------------------------------- */
+  /* --------------------------------------------------
+   * Prevent logged-in users from visiting auth pages
+   * -------------------------------------------------- */
 
-  if (isAuthRoute(pathname) || pathname === "/forbidden") {
+  if (isPublicAuthRoute(pathname) || pathname === "/forbidden") {
     return redirect(ROLE_DASHBOARD[role], req);
   }
 
-  /* ---------------------------------------------
-   * 4️⃣ Role-Based Access Control
-   * --------------------------------------------- */
+  /* --------------------------------------------------
+   * Role Protection
+   * -------------------------------------------------- */
 
   if (pathname.startsWith("/admin") && role !== "admin") {
     return redirect("/forbidden", req);
@@ -101,16 +141,12 @@ export async function proxy(req: NextRequest) {
     return redirect("/forbidden", req);
   }
 
-  /* ---------------------------------------------
-   * 5️⃣ Allow request
-   * --------------------------------------------- */
-
   return NextResponse.next();
 }
 
-/* --------------------------------------------------
- * Matcher
- * -------------------------------------------------- */
+/* -------------------------------------------------- */
+/* Matcher */
+/* -------------------------------------------------- */
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],

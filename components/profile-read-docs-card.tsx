@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ExternalLink, FileText } from "lucide-react";
 
-export function ProfileReadDocsCard({ label }: { label: string }) {
+export function ProfileReadDocsCard() {
   return (
     <Card>
       <CardContent className="flex items-center justify-between">
@@ -16,7 +16,9 @@ export function ProfileReadDocsCard({ label }: { label: string }) {
           </div>
 
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-foreground">{label}</span>
+            <span className="text-sm font-medium text-foreground">
+              Read documentation
+            </span>
           </div>
         </div>
 

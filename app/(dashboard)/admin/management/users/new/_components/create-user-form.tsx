@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import Link from "next/link";
+import { toast } from "sonner";
 
 import { AddUserSchema, addUserSchema } from "@/schemas/users";
+
 import {
   Field,
   FieldContent,
@@ -17,22 +19,27 @@ import {
   FieldSeparator,
   FieldSet,
 } from "@/components/ui/field";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { TextField } from "./text-field";
+
+const DATABASE_OPTIONS = [
+  { value: 0, label: "Disconnected" },
+  { value: 2, label: "Connected" },
+];
 
 export function CreateUserForm() {
+  const router = useRouter();
+
   const form = useForm<AddUserSchema>({
     resolver: zodResolver(addUserSchema),
     defaultValues: {
@@ -42,182 +49,124 @@ export function CreateUserForm() {
       cPassword: "",
       role: "",
       maxContainers: 5,
-      database: false,
+      database: 0, // aligned with backend state
     },
   });
 
-  const [isLoading, setIsLoading] = React.useState(false);
-  const router = useRouter();
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+  } = form;
 
-  async function handleCreate(values: AddUserSchema) {
-    setIsLoading(true);
-
+  async function onSubmit(values: AddUserSchema) {
     try {
       const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: values.username,
-          password: values.password,
           email: values.email,
+          password: values.password,
           role: values.role,
-          database: values.database,
           max_containers: values.maxContainers,
+          database: values.database,
         }),
       });
 
       const data = await res.json();
+
       if (!res.ok) {
-        return toast.error(data?.message);
+        throw new Error(data?.message || "Failed to create user");
       }
 
-      toast.success("Create user successful");
-
-      return router.push("/admin/management/users");
-    } catch {
-      return toast.error("Internal server error");
-    } finally {
-      setIsLoading(false);
+      toast.success("User created successfully");
+      router.push("/admin/management/users");
+    } catch (err: any) {
+      toast.error(err.message || "Internal server error");
     }
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="space-y-1">
+      <div>
         <h1 className="text-3xl font-semibold">Create New User</h1>
         <p className="text-sm text-muted-foreground">
           Add a new account and configure permissions.
         </p>
       </div>
+
       <Separator />
-      <form id="form-rhf-add-user" onSubmit={form.handleSubmit(handleCreate)}>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <FieldGroup>
-          {/* ================= Account Info ================= */}
+          {/* ================= Account ================= */}
           <FieldSet>
             <FieldLegend>Account Information</FieldLegend>
             <FieldDescription>Basic user identity details.</FieldDescription>
+
             <FieldGroup className="grid md:grid-cols-2 gap-6">
-              {/* Username */}
-              <Controller
+              <TextField
+                control={control}
                 name="username"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Username
-                      <span className="text-destructive">*</span>
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      placeholder="john_doe"
-                      aria-invalid={fieldState.invalid}
-                      disabled={isLoading}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                label="Username"
+                required
+                disabled={isSubmitting}
               />
 
-              {/* Email */}
-              <Controller
+              <TextField
+                control={control}
                 name="email"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Email
-                      <span className="text-destructive">*</span>
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      placeholder="john@example.com"
-                      aria-invalid={fieldState.invalid}
-                      disabled={isLoading}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                label="Email"
+                required
+                disabled={isSubmitting}
               />
 
-              {/* Password */}
-              <Controller
+              <TextField
+                control={control}
                 name="password"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Password
-                      <span className="text-destructive">*</span>
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      type="password"
-                      placeholder="Enter password"
-                      aria-invalid={fieldState.invalid}
-                      disabled={isLoading}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                label="Password"
+                type="password"
+                required
+                disabled={isSubmitting}
               />
 
-              {/* Confirm Password */}
-              <Controller
+              <TextField
+                control={control}
                 name="cPassword"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Confirm Password
-                      <span className="text-destructive">*</span>
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      type="password"
-                      placeholder="Enter confirm password"
-                      aria-invalid={fieldState.invalid}
-                      disabled={isLoading}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                label="Confirm Password"
+                type="password"
+                required
+                disabled={isSubmitting}
               />
             </FieldGroup>
           </FieldSet>
 
           <FieldSeparator />
 
-          {/* ================= Access Control ================= */}
+          {/* ================= Access ================= */}
           <FieldSet>
             <FieldLegend>Access Control</FieldLegend>
-            <FieldDescription>Define user permissions.</FieldDescription>
+            <FieldDescription>
+              Define user permissions and limits.
+            </FieldDescription>
+
             <FieldGroup className="grid md:grid-cols-2 gap-6">
+              {/* Role */}
               <Controller
                 name="role"
-                control={form.control}
+                control={control}
                 render={({ field, fieldState }) => (
-                  <Field
-                    orientation="responsive"
-                    data-invalid={fieldState.invalid}
-                  >
-                    <FieldLabel htmlFor={field.name}>
-                      Role
-                      <span className="text-destructive">*</span>
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel>
+                      Role<span className="text-destructive">*</span>
                     </FieldLabel>
+
                     <Select
-                      name={field.name}
                       value={field.value}
                       onValueChange={field.onChange}
-                      disabled={isLoading}
+                      disabled={isSubmitting}
                     >
                       <SelectTrigger aria-invalid={fieldState.invalid}>
                         <SelectValue placeholder="Select role" />
@@ -227,6 +176,7 @@ export function CreateUserForm() {
                         <SelectItem value="user">Standard User</SelectItem>
                       </SelectContent>
                     </Select>
+
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
@@ -235,72 +185,64 @@ export function CreateUserForm() {
               />
 
               {/* Max Containers */}
-              <Controller
+              <TextField
+                control={control}
                 name="maxContainers"
-                control={form.control}
+                label="Max Containers"
+                type="number"
+                required
+                disabled={isSubmitting}
+              />
+
+              <Controller
+                name="database"
+                control={control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel
-                      htmlFor={field.name}
-                      aria-invalid={fieldState.invalid}
+                    <FieldLabel>Database Access</FieldLabel>
+
+                    <Select
+                      value={String(field.value)}
+                      onValueChange={(val) => field.onChange(Number(val))}
+                      disabled={isSubmitting}
                     >
-                      Max Containers
-                      <span className="text-destructive">*</span>
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      aria-invalid={fieldState.invalid}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      disabled={isLoading}
-                    />
+                      <SelectTrigger aria-invalid={fieldState.invalid}>
+                        <SelectValue placeholder="Select database state" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {DATABASE_OPTIONS.map((option) => (
+                          <SelectItem
+                            key={option.value}
+                            value={String(option.value)}
+                          >
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
                   </Field>
                 )}
               />
-
-              {/* Database Toggle */}
-              <Controller
-                name="database"
-                control={form.control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Database Access
-                    </FieldLabel>
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={isLoading}
-                      />
-                      <FieldDescription>
-                        Allow user to create and manage databases.
-                      </FieldDescription>
-                    </div>
-                  </Field>
-                )}
-              />
             </FieldGroup>
           </FieldSet>
+
           <FieldSeparator />
-          <Field
-            orientation="horizontal"
-            className="flex items-center justify-end *:cursor-pointer"
-          >
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push("/admin/management/users")}
-            >
-              Cancel
+
+          {/* Footer */}
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" disabled={isSubmitting}>
+              <Link href="/admin/management/users">Cancel</Link>
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              Create User
+
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Creating..." : "Create User"}
             </Button>
-          </Field>
+          </div>
         </FieldGroup>
       </form>
     </div>

@@ -49,7 +49,7 @@ export function RegisterForm() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -62,7 +62,11 @@ export function RegisterForm() {
 
       const data = await res.json();
       if (!res.ok) {
-        return toast.error(data.error?.message || "Unexpected server error");
+        return toast.error(
+          data.error?.message ||
+            data.message ||
+            "Something went wrong. Try again later.",
+        );
       }
 
       toast.success("Register successful");

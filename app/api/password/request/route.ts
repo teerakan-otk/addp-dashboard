@@ -1,27 +1,33 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-export async function GET(req: Request) {
+
+export async function POST(req: Request) {
   const cookieStore = await cookies();
 
-  // Get access token from cookie
-  const token = cookieStore.get("access_token")?.value;
-  if (!token) {
+  // Parse request body
+  const body = await req.json();
+  if (!body) {
     return NextResponse.json(
-      { message: "Missing Authorization Header" },
-      { status: 401 },
+      { message: "Missing required fields" },
+      { status: 400 }
     );
   }
 
   try {
-    // Call Flask API profile endpoint
-    const res = await fetch(`${process.env.FLASK_API_URL}/profile`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+    // Call Flask API password/request endpoint
+    const res = await fetch(
+      `${process.env.FLASK_API_URL}/password/request`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: body.username,
+        }),
       },
-    });
+    );
 
     // Parse response body
     let data: any;
@@ -39,6 +45,15 @@ export async function GET(req: Request) {
         status: res.status,
       });
     }
+
+    // Set request token
+    cookieStore.set("request_token", data.token?.value, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: data.token?.expires,
+    });
 
     // Return success response
     return NextResponse.json(data, { status: res.status });
